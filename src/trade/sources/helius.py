@@ -235,7 +235,7 @@ class HolderRow:
 
     def describe(self) -> str:
         who = (self.owner or "?")[:6]
-        prog = PROGRAM_NAMES.get(self.owner_program or "", (self.owner_program or "nessun account")[:6])
+        prog = PROGRAM_NAMES.get(self.owner_program or "", self.owner_program or "nessun account")
         tag = "escluso (liquidità)" if self.excluded else "contato"
         return f"{self.pct}% · proprietario {who}… · programma {prog} · {tag}"
 
