@@ -130,6 +130,19 @@ Documentazione ufficiale Claude Code sulle differenze: https://code.claude.com/d
 | **Telegram Bot API** | https://core.telegram.org/bots/api (da verificare) | gratuita | — | Notifier, Social (solo chat dove il bot è aggiunto) | ✅ |
 | **Claude API** | https://docs.claude.com (prezzi da verificare al momento dell'uso) | — | a consumo | Social, Reporter | 🟡 Fase 8 |
 
+### TradingAgents (TauricResearch) — valutato su richiesta di Danish 🟡 idee sì, installazione no
+- **Tipo:** applicazione da terminale (CLI) per la ricerca finanziaria con agenti LLM. **Non** è una skill né un MCP server di Claude Code.
+- **GitHub:** https://github.com/TauricResearch/TradingAgents · **Doc:** https://tauricresearch.github.io/TradingAgents/ · **Articolo scientifico:** https://arxiv.org/abs/2412.20138
+- **Funzioni (dal README e da `docs/usage.md`, letti il 24/11/2026):** un agente principale pianifica la ricerca e affida approfondimenti a 4 agenti specialisti (Equity Research, Macro Strategy, Quant Research, Risk Analysis), segue 16 skill (es. `technical-analysis`, `risk-assessment`, `thesis-review`, `scenario-analysis`), cita la fonte di ogni numero, esporta report PDF/Markdown. Agenti e skill personalizzabili come file Markdown (standard Agent Skills). Il README dice esplicitamente: **"researches and answers; it does not place trades"**.
+- **Compatibilità Claude Code:** nessuna integrazione diretta; condivide solo il formato delle skill (`SKILL.md`), quindi le idee si possono riscrivere come skill di Claude Code.
+- **Requisiti:** Node.js ≥ 22 (versione 1.0.0, TypeScript). Installazione ufficiale con `curl -fsSL https://tauric.ai/tradingagents/install.sh | sh` o `npm i -g @tauric/tradingagents`.
+- **Costi:** serve una chiave Tauric (per dati su bilanci, documenti e notizie) oppure la chiave di un altro fornitore di modelli (OpenAI, Anthropic, Google, DeepSeek, OpenRouter) o un modello locale. Prezzi Tauric non indicati nelle pagine lette (**da verificare**).
+- **Licenza:** Apache‑2.0 · **Ultimo push:** 24/11/2026 · **Stelle:** ~123.700 · **Manutenzione:** molto attiva.
+- **Rischi di sicurezza:** installatore `curl | sh` da dominio del fornitore; la sincronizzazione con l'account Tauric (spenta di default, chiesta all'avvio) copierebbe domande, risposte e risultati degli strumenti sul loro cloud; controllo aggiornamenti giornaliero (disattivabile con `TRADINGAGENTS_NO_UPDATE_CHECK=1`).
+- **Limiti per noi:** orientato ad azioni USA e macro (bilanci, 10‑K, DCF, utili); le pagine lette non citano criptovalute, DEX o meme coin.
+- **Agente:** nessuno in esecuzione. Ispira il **Thesis Reviewer** (corsia lenta), le condizioni di invalidazione dei `TradeIntent` e la regola "ogni numero con la sua fonte" (vedi ARCHITECTURE.md §11).
+- **Decisione:** ❌ non installare ora · ✅ adottare le idee. Danish può provarlo a parte per ricerca personale su mercati tradizionali, con la sincronizzazione spenta.
+
 ## G. Avvisi emersi dalla ricerca
 
 1. **Organizzazioni false:** `github.com/Dexscreener-API` non è DexScreener (pagina piena di parole chiave, nessun legame con dexscreener.com). Non usarla.

@@ -70,6 +70,12 @@
 - [ ] Social Intelligence (Reddit/Telegram/X autorizzati)
 - [ ] Base/EVM, modulo CEX, dashboard, VPS
 
+### Dalle idee di TradingAgents (approvate per la progettazione il 24/11/2026)
+- [ ] Campo `invalidation[]` nei `TradeIntent` e controllo nell'Execution (Fase 4–5)
+- [ ] Skill di Claude Code: `token-due-diligence`, `post-trade-review`, `thesis-review` (Fase 1–3)
+- [ ] Thesis Reviewer nel report settimanale (Fase 8)
+- [ ] Regola "ogni numero con la sua fonte" nei report (Fase 5)
+
 ## 💡 Idee e proposte da valutare
 - Usare la registrazione dei dati anche per misurare quanto spesso i token "in tendenza" su DexScreener sono scam.
 - Valutare se un modulo su asset liquidi (SOL/BTC/ETH spot) dia risultati più stabili delle meme.

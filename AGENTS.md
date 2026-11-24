@@ -80,6 +80,7 @@ Legenda permessi: `R` lettura dati pubblici · `DB-W` scrittura nel proprio spaz
 ## 6. Strategy / Signal Engine
 
 - **Ruolo:** trasformare profili e verdetti in un `TradeIntent` con punteggio e motivazioni (`reason_codes`).
+- **Invalidazione:** ogni `TradeIntent` elenca in `invalidation[]` le condizioni deterministiche che chiudono subito la posizione (es. liquidità −30%, vendita del wallet del creatore, nuovo segnale di scam). Idea ripresa dall'agente Risk Analysis di TradingAgents.
 - **Regole:** strategia versionata (`strategy_version`); nessuna modifica automatica con denaro reale (vedi RISK_MANAGEMENT §8). Prima di proporre un trade stima il **costo del giro completo** (acquisto + vendita) e scarta se il guadagno atteso non lo copre con margine.
 - **Permessi:** `R`, `BUS`. Non può parlare con l'Execution direttamente.
 
@@ -105,6 +106,14 @@ Legenda permessi: `R` lettura dati pubblici · `DB-W` scrittura nel proprio spaz
 - **Ruolo:** firmare solo transazioni valide. È l'unico componente che può leggere la chiave del wallet caldo.
 - **Controlli propri:** HMAC valido, ordine non scaduto, importo ≤ massimo per transazione, budget giornaliero proprio non superato, solo programmi in allowlist (Jupiter, System, Token, ATA, Compute Budget), nessun trasferimento verso indirizzi non in allowlist.
 - **Permessi:** `SIGN`. Nessuna rete in ingresso, socket Unix locale.
+
+## 9b. Thesis Reviewer (corsia lenta, usa LLM) — idea presa da TradingAgents
+
+- **Ruolo:** fare l'avvocato del diavolo. Prima di ogni nuova `strategy_version` e nel report settimanale scrive il caso contro la strategia, un pre‑mortem ("se tra un mese avremo perso, perché?") e tre scenari (rialzista, base, ribassista), ognuno con il segnale che lo renderebbe evidente.
+- **Input:** risultati di backtest/shadow/pilota letti dal database, mai dati grezzi dai social.
+- **Output:** `ThesisReview` (Markdown + JSON) con ogni numero accompagnato dalla sua fonte.
+- **Permessi:** `R` sul database. **Nessun** potere su ordini, limiti o strategie: Danish legge e decide.
+- **Monitoraggio:** quante obiezioni si sono poi rivelate fondate.
 
 ## 10. Notifier e Reporter
 

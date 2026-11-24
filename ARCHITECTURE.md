@@ -103,7 +103,7 @@ PoolEvent       {event_id, chain, dex, pool, base_mint, quote_mint, created_at, 
 ScamVerdict     {event_id, mint, verdict: PASS|FAIL|UNKNOWN, reasons[], checks{...}, sources[], ttl_s}
 OnchainProfile  {mint, top10_pct, holders, dev_wallet_pct, lp_locked|burned, whale_flows_1h, ...}
 SocialScore     {mint, mentions_1h, growth, organic_score 0..1, bot_suspect 0..1, evidence[], model, prompt_hash}
-TradeIntent     {intent_id, mint, side, size_eur_requested, max_slippage_bps, reason_codes[], strategy_version}
+TradeIntent     {intent_id, mint, side, size_eur_requested, max_slippage_bps, reason_codes[], invalidation[], strategy_version}
 RiskDecision    {intent_id, decision: APPROVE|REJECT, size_eur_final, limits_snapshot, reject_reasons[]}
 ApprovedOrder   {order_id(idempotency), intent_id, mint, side, amount_in, min_out, expires_at, hmac}
 ExecutionReport {order_id, status, signature, filled_in, filled_out, fees{network,priority,pool,platform}, slippage_bps, latency_ms, error}
@@ -156,7 +156,23 @@ ExecutionReport {order_id, status, signature, filled_in, filled_out, fees{networ
 - **Claude API** (runtime, opzionale): Social Intelligence e report giornalieri. Input social trattato come **non fidato** (prompt injection), output validato con schema JSON, budget mensile massimo impostato nella console.
 - **MCP server** (solo durante lo sviluppo/ricerca, sola lettura): CoinGecko, Helius in `--read-only`. Mai nel percorso di esecuzione.
 
-## 11. Stack tecnico proposto
+## 11. Idee adottate da TradingAgents (TauricResearch)
+
+Valutato il 24/11/2026 su richiesta di Danish (scheda completa in [SKILLS.md](SKILLS.md), voce "TradingAgents"). Non installiamo lo strumento: prendiamo **idee di progetto**, tutte compatibili con la regola "l'AI consiglia, non firma e non scavalca il rischio".
+
+| Idea di TradingAgents | Come la usiamo noi | Dove |
+|---|---|---|
+| Agente "Risk Analysis": cosa farebbe perdere una posizione e quale segnale lo mostrerebbe presto | ogni `TradeIntent` include `invalidation[]`: condizioni **deterministiche** di uscita (es. liquidità −30%, wallet del creatore vende, prezzo sotto soglia) che l'Execution controlla da sola | corsia veloce |
+| Skill "thesis-review" (il caso contrario, pre‑mortem) e "scenario-analysis" (scenari rialzista/base/ribassista) | nuovo **Thesis Reviewer** nella corsia lenta: prima di ogni nuova `strategy_version` e nel report settimanale scrive il caso contro la strategia e cosa la farebbe fallire. È solo consultivo | corsia lenta, Reporter |
+| Ogni numero nella risposta ha la sua fonte | ogni dato nei report, nei `SocialScore` e nei verdetti ha fonte e orario (`sources[]`, `evidence[]`); un numero senza fonte non entra nel report | tutti gli agenti |
+| Agenti specialisti con contesto isolato e un "brief" | coincide con i subagent di Claude Code e con la separazione già prevista; nessun cambiamento all'architettura | sviluppo |
+| Skill come file Markdown nello standard Agent Skills | scriviamo le nostre procedure di ricerca come skill di Claude Code (`token-due-diligence`, `post-trade-review`, `thesis-review`) | `.claude/skills/` (Fase 1–3) |
+| Modalità piano: prima il piano di ricerca, poi l'esecuzione | già prevista per il lavoro con Claude Code | sviluppo |
+| Esportare report in PDF/Markdown | il Reporter salva il report giornaliero anche come file Markdown | Reporter |
+
+Cosa **non** prendiamo: un agente LLM che decide o esegue i trade; le analisi pensate per azioni USA (bilanci, DCF, utili), che non si applicano alle meme coin.
+
+## 12. Stack tecnico proposto
 
 Python 3.12+ gestito con `uv`; `httpx` e `websockets` per le API; `pydantic` per i messaggi; `solders` (+ `solana-py` dove utile) per transazioni Solana; SQLite/DuckDB; `pytest` per i test; `python-telegram-bot` per notifiche; `anthropic` SDK per la corsia lenta. Dettagli, licenze e motivazioni in [SKILLS.md](SKILLS.md).
 
