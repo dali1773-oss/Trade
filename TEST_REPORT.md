@@ -6,6 +6,14 @@
 
 Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 99 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
 
+### 2026-11-24 — Seconda prova reale di trade-scan (commit 14e48bb)
+Risultato: 4 token nuovi, tutti FAIL.
+- Quota del creatore ora calcolata anche sulle transazioni "versione 1" (pump.fun).
+- Optimus (WK9K…): in 2 minuti il pool PumpSwap è sparito dai grandi possessori, il creatore detiene il 17,58% e la perdita di rivendita è passata a 99,93% → probabile rug pull, bloccato correttamente.
+- Huss e Optimus: il conto FhVo3m… (autorità dei pool Meteora DBC) era contato come "balena" (94% e 80%) → aggiunto all'elenco delle autorità di liquidità.
+- ATX: grande possessore ALwtAc… senza account (probabile PDA di una curva di lancio non ancora riconosciuta) → resta contato, quindi blocca (prudente).
+Decisione: correggere l'elenco delle autorità e ripetere la prova.
+
 ### 2026-11-24 — Prova reale di trade-scan sul Mac (commit 9322ac3)
 Comando: `uv run trade-scan <token>`; sola lettura, nessuna chiave nell'output.
 Risultato:

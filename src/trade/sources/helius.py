@@ -47,10 +47,12 @@ AMM_PROGRAMS = frozenset({
     "Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB",  # Meteora pools
     "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",  # PumpSwap
     "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",  # pump.fun (curva)
+    "dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN",  # Meteora Dynamic Bonding Curve
 })
 # Autorità dei pool che non hanno un account proprio (PDA senza dati).
 KNOWN_POOL_AUTHORITIES = frozenset({
     "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",  # Raydium AMM v4 authority
+    "FhVo3mqL8PW5pH5U2CN4XE33DokiyZnUwuGpH2hmHLuM",  # Meteora DBC pool authority (visto il 24/11/2026 con 94% e 80% di due token)
 })
 MAX_SIGNATURE_PAGES = 3  # oltre 3000 transazioni il creatore resta "sconosciuto"
 
@@ -234,10 +236,12 @@ class HolderRow:
     excluded: bool
 
     def describe(self) -> str:
-        who = (self.owner or "?")[:6]
+        # Per i conti grandi che contiamo mostriamo l'indirizzo intero, così si può identificarlo.
+        full = not self.excluded and self.pct >= 1
+        who = (self.owner or "?") if full else (self.owner or "?")[:6] + "…"
         prog = PROGRAM_NAMES.get(self.owner_program or "", self.owner_program or "nessun account")
         tag = "escluso (liquidità)" if self.excluded else "contato"
-        return f"{self.pct}% · proprietario {who}… · programma {prog} · {tag}"
+        return f"{self.pct}% · proprietario {who} · programma {prog} · {tag}"
 
 
 PROGRAM_NAMES = {
@@ -250,6 +254,7 @@ PROGRAM_NAMES = {
     "Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB": "Meteora pools",
     "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA": "PumpSwap",
     "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P": "pump.fun",
+    "dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN": "Meteora DBC",
 }
 
 
