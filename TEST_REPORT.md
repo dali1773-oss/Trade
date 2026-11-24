@@ -36,4 +36,11 @@ Decisione: …
 Comando: `uv run --python 3.12 pytest -q`
 Risultato: **33 passati, 0 falliti**.
 Copertura: modalità operative (default OFF, kill switch sempre ammesso, denaro reale solo con approvazione, LIVE solo da LIVE_PILOT) e hook di sicurezza (19 accessi sensibili bloccati, 6 operazioni normali ammesse, input non valido bloccato).
-Decisione: da ripetere sul Mac di Danish (Fase 1, passo 4).
+Decisione: ripetuto sul Mac (vedi sotto).
+
+### 2026-11-24 — Test unitari sul Mac di Danish (Fase 1, passo 4)
+Versione/commit: ce8e808 · Python 3.12.16 (uv) · pytest 9.2.0
+Comando: `uv sync && uv run pytest -q`
+Risultato: **33 passati, 0 falliti** (0,79 s).
+Hook con il Python di sistema 3.9.6 (input finto `.env`): exit 2, blocco corretto.
+Decisione: passo 4 superato. Prossimo: verifica dal vivo che Claude Code, aperto nella cartella `Trade`, non legga un `.env` di prova.

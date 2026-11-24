@@ -42,8 +42,8 @@ echo "--- claude code ---"; command -v claude >/dev/null && claude --version || 
 | 1 | Verifica del Mac | ✅ |
 | 2 | Installare `uv` (comando ufficiale `curl -LsSf https://astral.sh/uv/install.sh \| sh`, fonte https://github.com/astral-sh/uv) | ✅ |
 | 3 | Scaricare il progetto in `~/tradd/Trade` con `git clone` e installare Python 3.12 con `uv python install 3.12` | ✅ |
-| 4 | Aggiornare il progetto sul Mac (`git pull`), `uv sync`, `uv run pytest` | ⏳ prossimo |
-| 5 | Verificare che Claude **non** riesca a leggere un `.env` di prova (permessi + hook) | ⏳ |
+| 4 | Aggiornare il progetto sul Mac (`git pull`), `uv sync`, `uv run pytest` | ✅ 33/33 |
+| 5 | Verificare che Claude **non** riesca a leggere un `.env` di prova (permessi + hook) | ⏳ prossimo |
 | 6 | Claude Code da terminale (facoltativo: oggi lavoriamo tramite l'app Claude). Comando ufficiale: `curl -fsSL https://claude.ai/install.sh \| bash` (fonte https://code.claude.com/docs/en/setup) | facoltativo |
 
 Gli strumenti da riga di comando Apple e git erano già presenti; Homebrew non serve.

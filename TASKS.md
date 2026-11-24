@@ -29,7 +29,7 @@
 - [x] `uv` 0.13.9 e Python 3.12.16 installati (24/11/2026)
 - [x] Repository clonato sul Mac in `~/tradd/Trade`
 - [x] Scheletro progetto (`pyproject.toml`, `src/trade/`, `tests/`) — 33 test passano nel cloud
-- [ ] Verifica sul Mac: `uv run pytest` passa
+- [x] Verifica sul Mac: `uv run pytest` passa (33/33, 24/11/2026)
 - [x] Hook `PreToolUse` di sicurezza (`.claude/hooks/protect_secrets.py`) con test
 - [ ] Verifica sul Mac: Claude non riesce a leggere un `.env` di prova
 - [ ] `gitleaks` e `pip-audit` in CI (GitHub Actions)
