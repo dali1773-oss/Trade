@@ -12,7 +12,6 @@
       "Read(~/.ssh/**)",
       "Edit(./.env)",
       "Edit(~/.trade-secrets/**)",
-      "Write(~/.trade-secrets/**)",
       "Bash(solana transfer *)",
       "Bash(solana-keygen *)",
       "Bash(spl-token transfer *)",
