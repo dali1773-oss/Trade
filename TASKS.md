@@ -26,7 +26,7 @@
 ### Fase 1 — Ambiente
 - [x] Strumenti da riga di comando Apple / git (già presenti)
 - [ ] Claude Code locale collegato al repository
-- [ ] `uv` e Python 3.12+
+- [x] `uv` 0.13.9 installato (24/11/2026); Python 3.12+ tramite uv: da fare
 - [ ] Scheletro progetto (`pyproject.toml`, `src/trade/`, `tests/`)
 - [ ] Hook `PreToolUse` di sicurezza + test che `.env` non è leggibile
 - [ ] `gitleaks` e `pip-audit` in CI (GitHub Actions)
