@@ -43,7 +43,7 @@ echo "--- claude code ---"; command -v claude >/dev/null && claude --version || 
 | 2 | Installare `uv` (comando ufficiale `curl -LsSf https://astral.sh/uv/install.sh \| sh`, fonte https://github.com/astral-sh/uv) | ✅ |
 | 3 | Scaricare il progetto in `~/tradd/Trade` con `git clone` e installare Python 3.12 con `uv python install 3.12` | ✅ |
 | 4 | Aggiornare il progetto sul Mac (`git pull`), `uv sync`, `uv run pytest` | ✅ 33/33 |
-| 5 | Verificare che Claude **non** riesca a leggere un `.env` di prova (permessi + hook) | ⏳ prossimo |
+| 5 | Verificare che Claude **non** riesca a leggere un `.env` di prova (permessi + hook, anche a livello utente) | ✅ 5/5 bloccate |
 | 6 | Claude Code da terminale (facoltativo: oggi lavoriamo tramite l'app Claude). Comando ufficiale: `curl -fsSL https://claude.ai/install.sh \| bash` (fonte https://code.claude.com/docs/en/setup) | facoltativo |
 
 Gli strumenti da riga di comando Apple e git erano già presenti; Homebrew non serve.
@@ -57,3 +57,5 @@ Prima di ogni comando che scarica uno script (`curl … | sh`), Claude mostrerà
 | 2026-11-24 | Passo 1: verifica | ✅ | macOS 14.6, Apple Silicon (arm64); strumenti Apple e git 2.39.5 presenti; Python di sistema 3.9.6 (troppo vecchio, useremo uv); Node v26.13.1; mancano uv, Homebrew e Claude Code da terminale; disco: 23 GB liberi su 228 (89% pieno) |
 | 2026-11-24 | Passo 2: uv | ✅ (confermato da Danish) | uv 0.13.9 in `~/.local/bin`; installer ufficiale controllato prima dell'esecuzione, senza sudo; checksum sha256 saltato dall'installer (manca `sha256sum` su macOS); nessun file della shell modificato |
 | 2026-11-24 | Passo 3: progetto + Python | ✅ | repository clonato in `/Users/danishali/tradd/Trade` (branch `claude/project-thread-ijdg0q`); Python 3.12.16 installato da uv in `~/.local/share/uv/python/`, comando `python3.12`; `python3` di sistema invariato |
+| 2026-11-24 | Passo 4: test | ✅ | `uv sync` (solo pytest), 33/33 test passano |
+| 2026-11-24 | Passo 5: protezioni | ✅ | Danish ha copiato regole e hook in `~/.claude/`; 5 prove di accesso ai segreti bloccate |

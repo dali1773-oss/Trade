@@ -17,6 +17,10 @@
 
 ## 🔄 In corso
 
+- [ ] **Fase 1 completata il 24/11/2026** tranne la CI su GitHub; prossima: Fase 2 (Data Recorder)
+- [ ] Rendere privato il repository GitHub (consigliato) — **Danish**
+- [ ] Liberare spazio su disco prima della Fase 2 (23 GB liberi) — **Danish**
+
 - [ ] Revisione e approvazione della PR dei documenti — **Danish**
 - [ ] Approvazione dei limiti di rischio proposti (RISK_MANAGEMENT §4–5) — **Danish**
 - [x] Fase 1, passo 1: verifica del Mac (24/11/2026, vedi INSTALLATION.md)
@@ -31,8 +35,8 @@
 - [x] Scheletro progetto (`pyproject.toml`, `src/trade/`, `tests/`) — 33 test passano nel cloud
 - [x] Verifica sul Mac: `uv run pytest` passa (33/33, 24/11/2026)
 - [x] Hook `PreToolUse` di sicurezza (`.claude/hooks/protect_secrets.py`) con test
-- [ ] Verifica sul Mac: Claude non riesce a leggere un `.env` di prova (primo tentativo 24/11 annullato: sessione aperta in `tradd` invece che in `tradd/Trade`)
-- [ ] Regole di divieto anche in `~/.claude/settings.json` sul Mac (valgono in ogni cartella)
+- [x] Verifica sul Mac: Claude non riesce a creare né leggere un `.env` (5/5 prove bloccate, 24/11/2026)
+- [x] Regole di divieto e hook anche in `~/.claude/settings.json` sul Mac (installate da Danish il 24/11/2026)
 - [ ] `gitleaks` e `pip-audit` in CI (GitHub Actions)
 - [x] Subagent di sviluppo in `.claude/agents/` (security-reviewer, backtest-analyst, docs-keeper)
 

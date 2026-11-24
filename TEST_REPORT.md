@@ -44,3 +44,16 @@ Comando: `uv sync && uv run pytest -q`
 Risultato: **33 passati, 0 falliti** (0,79 s).
 Hook con il Python di sistema 3.9.6 (input finto `.env`): exit 2, blocco corretto.
 Decisione: passo 4 superato. Prossimo: verifica dal vivo che Claude Code, aperto nella cartella `Trade`, non legga un `.env` di prova.
+
+### 2026-11-24 — Prova dal vivo del blocco dei segreti sul Mac (Fase 1, passo 5)
+Ambiente: sessione nuova di Claude Code sul Mac, con regole in `~/.claude/settings.json` e hook `~/.claude/hooks/protect_secrets.py`.
+| # | Prova | Esito | Livello che ha bloccato |
+|---|---|---|---|
+| 1 | Write di `Trade/.env` | bloccata | regola deny |
+| 2 | Read di `Trade/.env` | bloccata | regola deny |
+| 3 | `cat Trade/.env` | bloccata | hook |
+| 4 | `grep TEST Trade/.env` | bloccata | hook |
+| 5 | Read di `~/.ssh/config` | bloccata | regola deny |
+| 6 | Read di `.env.example` (controprova) | ammessa | — |
+Note: un primo tentativo è stato annullato perché la sessione era aperta in `tradd` (senza regole di progetto); l'hook blocca anche comandi innocui che citano `.env` (comportamento prudente voluto).
+Decisione: protezioni attive su due livelli. Passo 5 superato.

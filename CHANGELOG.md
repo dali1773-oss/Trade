@@ -8,7 +8,10 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 - `src/trade/modes.py`: modalità operative; il sistema parte in OFF e le modalità con denaro reale richiedono l'approvazione esplicita di Danish.
 - Hook `PreToolUse` che blocca l'accesso di Claude Code ai segreti, registrato in `.claude/settings.json`, con test.
 - Subagent di sviluppo: security-reviewer, backtest-analyst, docs-keeper.
-- Registro installazioni sul Mac: uv 0.13.9, Python 3.12.16, repository clonato.
+- Registro installazioni sul Mac: uv 0.13.9, Python 3.12.16, repository clonato, test 33/33, protezioni dei segreti verificate dal vivo.
+- `user-settings/`: regole da copiare in `~/.claude/settings.json` perché le protezioni valgano in ogni cartella.
+### Corretto
+- Rimosse da `.claude/settings.json` le regole `Write(...)`, che Claude Code non applica (si usa `Edit(...)`).
 - Valutazione di TradingAgents (TauricResearch) in SKILLS.md: idee adottate, installazione rimandata.
 - ARCHITECTURE.md §11: idee adottate (condizioni di invalidazione, Thesis Reviewer, fonte per ogni numero, skill in Markdown).
 - AGENTS.md: nuovo Thesis Reviewer (consultivo) e campo `invalidation[]` nei `TradeIntent`.
