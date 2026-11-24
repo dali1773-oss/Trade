@@ -4,7 +4,7 @@
 
 ## Stato attuale
 
-Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 99 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
+Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 102 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
 
 ### 2026-11-24 — Terza prova (commit 022d830) e registratore
 - Autorità Meteora DBC confermata: su Optimus FhVo3m… ora risulta "escluso (liquidità)".

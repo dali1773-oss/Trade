@@ -71,6 +71,36 @@ CREATE TABLE IF NOT EXISTS pool_snapshots (
 );
 CREATE INDEX IF NOT EXISTS idx_snap_token ON pool_snapshots(chain, base_token, observed_at);
 CREATE INDEX IF NOT EXISTS idx_snap_pool ON pool_snapshots(chain, pool_address, observed_at);
+
+-- Verdetti anti-truffa (Fase 3): uno per token, dato quando il token ha almeno 15 minuti.
+CREATE TABLE IF NOT EXISTS scam_checks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    checked_at TEXT NOT NULL,
+    chain TEXT NOT NULL,
+    token_address TEXT NOT NULL,
+    pool_address TEXT,
+    verdict TEXT NOT NULL,
+    reasons TEXT NOT NULL,
+    info TEXT NOT NULL,
+    notes TEXT NOT NULL,
+    price_usd TEXT,
+    liquidity_usd TEXT,
+    UNIQUE (chain, token_address)
+);
+
+-- Esito a distanza di tempo (24 h, 7 giorni): serve a misurare falsi positivi/negativi.
+CREATE TABLE IF NOT EXISTS scam_labels (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    labeled_at TEXT NOT NULL,
+    chain TEXT NOT NULL,
+    token_address TEXT NOT NULL,
+    horizon_h INTEGER NOT NULL,
+    outcome TEXT NOT NULL,
+    price_ratio TEXT,
+    liquidity_usd TEXT,
+    detail TEXT,
+    UNIQUE (chain, token_address, horizon_h)
+);
 """
 
 
@@ -199,8 +229,73 @@ class Store:
         self.conn.commit()
         return len(rows)
 
+    # --- verdetti anti-truffa -----------------------------------------------
+    def tokens_to_scan(
+        self, chain: str, limit: int, *, now: datetime | None = None,
+        min_age: timedelta = timedelta(minutes=15), max_age: timedelta = timedelta(hours=2),
+    ) -> list[str]:
+        """Token visti da almeno `min_age` (e non più di `max_age`) senza ancora un verdetto."""
+        now = now or datetime.now(UTC)
+        rows = self.conn.execute(
+            "SELECT t.token_address FROM tokens t WHERE t.chain = ? AND t.first_seen <= ? "
+            "AND t.first_seen >= ? AND NOT EXISTS (SELECT 1 FROM scam_checks c "
+            "WHERE c.chain = t.chain AND c.token_address = t.token_address) "
+            "ORDER BY t.first_seen ASC LIMIT ?",
+            (chain, _iso(now - min_age), _iso(now - max_age), limit),
+        ).fetchall()
+        return [row["token_address"] for row in rows]
+
+    def add_scam_check(
+        self, chain: str, token_address: str, *, verdict: str, reasons: list[str],
+        info: dict[str, Any], notes: list[str], pool_address: str | None = None,
+        price_usd: Decimal | None = None, liquidity_usd: Decimal | None = None,
+        checked_at: datetime | None = None,
+    ) -> None:
+        self.conn.execute(
+            "INSERT OR IGNORE INTO scam_checks (checked_at, chain, token_address, pool_address, verdict, "
+            "reasons, info, notes, price_usd, liquidity_usd) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (
+                _iso(checked_at or datetime.now(UTC)), chain, token_address, pool_address, verdict,
+                json.dumps(reasons), json.dumps(info, default=_json_default), json.dumps(notes),
+                _dec(price_usd), _dec(liquidity_usd),
+            ),
+        )
+        self.conn.commit()
+
+    def checks_to_label(
+        self, chain: str, horizon_h: int, limit: int, *, now: datetime | None = None
+    ) -> list[sqlite3.Row]:
+        now = now or datetime.now(UTC)
+        return self.conn.execute(
+            "SELECT * FROM scam_checks c WHERE c.chain = ? AND c.checked_at <= ? AND NOT EXISTS "
+            "(SELECT 1 FROM scam_labels l WHERE l.chain = c.chain AND l.token_address = c.token_address "
+            "AND l.horizon_h = ?) ORDER BY c.checked_at ASC LIMIT ?",
+            (chain, _iso(now - timedelta(hours=horizon_h)), horizon_h, limit),
+        ).fetchall()
+
+    def add_label(
+        self, chain: str, token_address: str, horizon_h: int, outcome: str, *,
+        price_ratio: Decimal | None, liquidity_usd: Decimal | None, detail: str,
+    ) -> None:
+        self.conn.execute(
+            "INSERT OR IGNORE INTO scam_labels (labeled_at, chain, token_address, horizon_h, outcome, "
+            "price_ratio, liquidity_usd, detail) VALUES (?,?,?,?,?,?,?,?)",
+            (_iso(datetime.now(UTC)), chain, token_address, horizon_h, outcome,
+             _dec(price_ratio), _dec(liquidity_usd), detail),
+        )
+        self.conn.commit()
+
+    def label_matrix(self, horizon_h: int) -> dict[tuple[str, str], int]:
+        rows = self.conn.execute(
+            "SELECT c.verdict, l.outcome, COUNT(*) n FROM scam_checks c JOIN scam_labels l "
+            "ON l.chain = c.chain AND l.token_address = c.token_address WHERE l.horizon_h = ? "
+            "GROUP BY c.verdict, l.outcome",
+            (horizon_h,),
+        ).fetchall()
+        return {(r["verdict"], r["outcome"]): r["n"] for r in rows}
+
     def counts(self) -> dict[str, int]:
         return {
             table: self.conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-            for table in ("events", "tokens", "pool_snapshots")
+            for table in ("events", "tokens", "pool_snapshots", "scam_checks", "scam_labels")
         }

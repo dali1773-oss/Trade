@@ -63,7 +63,9 @@
 - [x] Esclusi dal top 10 i conti di pool e curve (Raydium, Orca, Meteora, PumpSwap, pump.fun)
 - [ ] Exchange centralizzati nel top 10 (rilevante solo per token vecchi come BONK)
 - [ ] Integrazione RugCheck e GoPlus
-- [ ] Etichettatura 24 h / 7 giorni e report falsi negativi
+- [x] Verdetti automatici: `trade-record --scan` controlla ogni token dopo 15 minuti e salva il verdetto (tabella `scam_checks`)
+- [x] Etichettatura: `uv run trade-label` (24 h) e `--horizon 168` (7 giorni), tabella verdetto × esito e falsi negativi
+- [ ] Prima etichettatura reale (25/11/2026 sera) e decisione sulle soglie
 
 ### Fase 4 — Strategia e backtest
 - [ ] Modello costi completo

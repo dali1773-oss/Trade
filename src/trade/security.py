@@ -92,32 +92,55 @@ def pick_main_pool(pairs: list[PoolSnapshot]) -> PoolSnapshot | None:
     return max(solana, key=lambda p: p.liquidity_usd or 0)
 
 
+@dataclass
+class ScanResult:
+    verdict: ScamVerdict | None
+    report: SecurityReport | None
+    main_pool: PoolSnapshot | None
+    message: str
+
+
+class Scanner:
+    """Verdetto anti-truffa di un token, riusando client già aperti (sola lettura)."""
+
+    def __init__(self, ds: DexScreenerClient, helius: HeliusClient, jupiter: JupiterClient) -> None:
+        self.ds = ds
+        self.helius = helius
+        self.jupiter = jupiter
+
+    async def check(self, mint: str) -> ScanResult:
+        try:
+            pairs = await self.ds.token_pairs(mint)
+        except SourceError as exc:
+            return ScanResult(None, None, None, f"dexscreener: {exc}")
+        main = pick_main_pool(pairs)
+        if main is None:
+            return ScanResult(None, None, None, "nessun pool trovato su DexScreener per questo token")
+        report = await gather_security_info(
+            mint, helius=self.helius, jupiter=self.jupiter,
+            pool_addresses={p.pool_address for p in pairs},
+        )
+        verdict = evaluate(main, report.info, now=datetime.now(UTC))
+        return ScanResult(verdict, report, main, "ok")
+
+
+def keys_from(settings: dict[str, str]) -> tuple[str, str] | None:
+    h, j = settings.get("HELIUS_API_KEY"), settings.get("JUPITER_API_KEY")
+    return (h, j) if h and j else None
+
+
 async def scan(
     mint: str,
     settings_file: Path = DEFAULT_FILE,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> tuple[ScamVerdict | None, SecurityReport | None, str]:
-    settings = load_settings(settings_file)
-    helius_key = settings.get("HELIUS_API_KEY")
-    jupiter_key = settings.get("JUPITER_API_KEY")
-    if not helius_key or not jupiter_key:
+    keys = keys_from(load_settings(settings_file))
+    if keys is None:
         return None, None, "chiavi mancanti: esegui prima `uv run trade-check-keys`"
     async with make_client(transport) as client:
-        try:
-            pairs = await DexScreenerClient(client).token_pairs(mint)
-        except SourceError as exc:
-            return None, None, f"dexscreener: {exc}"
-        main = pick_main_pool(pairs)
-        if main is None:
-            return None, None, "nessun pool trovato su DexScreener per questo token"
-        report = await gather_security_info(
-            mint,
-            helius=HeliusClient(client, helius_key),
-            jupiter=JupiterClient(client, jupiter_key),
-            pool_addresses={p.pool_address for p in pairs},
-        )
-    verdict = evaluate(main, report.info, now=datetime.now(UTC))
-    return verdict, report, "ok"
+        scanner = Scanner(DexScreenerClient(client), HeliusClient(client, keys[0]), JupiterClient(client, keys[1]))
+        res = await scanner.check(mint)
+    return res.verdict, res.report, res.message
 
 
 ICON = {Verdict.PASS: "✅", Verdict.FAIL: "❌", Verdict.UNKNOWN: "❔"}

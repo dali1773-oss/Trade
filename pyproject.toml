@@ -13,6 +13,7 @@ dependencies = [
 trade-record = "trade.recorder:main"
 trade-check-keys = "trade.check_keys:main"
 trade-scan = "trade.security:main"
+trade-label = "trade.label:main"
 
 [dependency-groups]
 dev = ["pytest>=8", "pytest-asyncio>=0.24"]
