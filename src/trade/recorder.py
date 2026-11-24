@@ -116,7 +116,20 @@ async def _main_async(args: argparse.Namespace, transport: httpx.AsyncBaseTransp
             refresh_per_cycle=args.refresh,
         )
         while not stop.is_set():
-            stats = await recorder.run_cycle()
+            # Ctrl+C interrompe subito anche un ciclo in corso: ogni snapshot già
+            # salvato resta nel database, il ciclo a metà viene semplicemente scartato.
+            cycle = asyncio.ensure_future(recorder.run_cycle())
+            stopper = asyncio.ensure_future(stop.wait())
+            done, _ = await asyncio.wait({cycle, stopper}, return_when=asyncio.FIRST_COMPLETED)
+            if cycle not in done:
+                cycle.cancel()
+                try:
+                    await cycle
+                except asyncio.CancelledError:
+                    pass
+                break
+            stopper.cancel()
+            stats = cycle.result()
             cycles += 1
             totals = store.counts()
             log.info(

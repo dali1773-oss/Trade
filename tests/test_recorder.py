@@ -126,3 +126,28 @@ async def test_limiter_spaces_requests():
     lim.penalize(60)
     await lim.wait()
     assert slept[-1] == pytest.approx(61.5)
+
+
+async def test_ctrl_c_stops_immediately_mid_cycle(tmp_path):
+    import asyncio
+    import os
+    import signal
+    import time
+
+    async def slow(request):
+        await asyncio.sleep(30)
+        return httpx.Response(200, json={})
+
+    class SlowTransport(httpx.AsyncBaseTransport):
+        async def handle_async_request(self, request):
+            return await slow(request)
+
+    args = build_parser().parse_args(["--db", str(tmp_path / "r.sqlite"), "--interval", "60"])
+    loop = asyncio.get_running_loop()
+    loop.call_later(0.3, os.kill, os.getpid(), signal.SIGINT)
+    t0 = time.monotonic()
+    assert await _main_async(args, transport=SlowTransport()) == 0
+    assert time.monotonic() - t0 < 5
+    conn = sqlite3.connect(tmp_path / "r.sqlite")
+    kinds = [r[0] for r in conn.execute("SELECT kind FROM events")]
+    assert kinds[-1] == "recorder_stop"
