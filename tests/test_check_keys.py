@@ -18,7 +18,8 @@ def transport(status=200, body=None, seen=None):
     def handler(request: httpx.Request) -> httpx.Response:
         if seen is not None:
             seen.append(request)
-        return httpx.Response(status, json=body if body is not None else {"result": "ok"})
+        default = {"result": "ok"} if request.url.host.endswith("helius-rpc.com") else {"outAmount": "123"}
+        return httpx.Response(status, json=body if body is not None else default)
 
     return httpx.MockTransport(handler)
 
@@ -36,8 +37,21 @@ def test_redact():
 async def test_ok_and_key_sent_only_to_helius(tmp_path):
     f = write_settings(tmp_path, f"HELIUS_API_KEY={FAKE_KEY}\n")
     seen = []
-    assert await run(f, transport(seen=seen)) == {"Helius": "OK"}
-    assert seen[0].url.host == "mainnet.helius-rpc.com"
+    res = await run(f, transport(seen=seen))
+    assert res["Helius"] == "OK"
+    assert res["Jupiter"].startswith("MANCANTE")
+    assert [r.url.host for r in seen] == ["mainnet.helius-rpc.com"]
+
+
+async def test_jupiter_key_in_header_only(tmp_path):
+    f = write_settings(tmp_path, f"JUPITER_API_KEY={FAKE_KEY}\n")
+    seen = []
+    res = await run(f, transport(seen=seen))
+    assert res["Jupiter"] == "OK"
+    req = seen[0]
+    assert req.url.host == "api.jup.ag" and req.method == "GET"
+    assert req.headers["x-api-key"] == FAKE_KEY
+    assert FAKE_KEY not in str(req.url)
 
 
 async def test_invalid_key(tmp_path):

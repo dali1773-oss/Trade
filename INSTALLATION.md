@@ -59,3 +59,5 @@ Prima di ogni comando che scarica uno script (`curl … | sh`), Claude mostrerà
 | 2026-11-24 | Passo 3: progetto + Python | ✅ | repository clonato in `/Users/danishali/tradd/Trade` (branch `claude/project-thread-ijdg0q`); Python 3.12.16 installato da uv in `~/.local/share/uv/python/`, comando `python3.12`; `python3` di sistema invariato |
 | 2026-11-24 | Passo 4: test | ✅ | `uv sync` (solo pytest), 33/33 test passano |
 | 2026-11-24 | Passo 5: protezioni | ✅ | Danish ha copiato regole e hook in `~/.claude/`; 5 prove di accesso ai segreti bloccate |
+| 2026-11-24 | `uv` nel Terminale | ✅ | aggiunta in `~/.zshrc` la riga `export PATH="$HOME/.local/bin:$PATH"` (prima il Terminale non trovava `uv`) |
+| 2026-11-24 | Chiave Helius (Free) | ✅ | salvata solo in `.env` (permessi 600, escluso da git) con `read -s`; prima chiave finita per errore in uno screenshot → eliminata su Helius e sostituita; `uv run trade-check-keys` → `Helius: OK` |
