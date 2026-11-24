@@ -53,6 +53,8 @@
 
 ### Fase 3 — Scam Detection
 - [x] Regole deterministiche con veto (`src/trade/scam.py`): liquidità, età pool, mint/freeze, Token‑2022, concentrazione, vendibilità, nomi imitati. Dato mancante = blocco
+- [x] Chiavi gratuite Helius e Jupiter salvate in `.env` e verificate (`uv run trade-check-keys`)
+- [x] Registrazione continua avviata sul Mac in sottofondo (log in `data/recorder.log`, stop con `pkill -INT -f trade-record`)
 - [ ] Client Helius per i dati on‑chain (mint/freeze/Token‑2022, holder) — serve chiave gratuita Helius in `.env`
 - [ ] Simulazione vendita via Jupiter — serve chiave gratuita Jupiter in `.env`
 - [ ] Integrazione RugCheck e GoPlus

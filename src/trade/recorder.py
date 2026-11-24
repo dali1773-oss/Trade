@@ -162,6 +162,8 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     args.interval = max(args.interval, 30.0)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    # Una riga per ogni richiesta HTTP riempirebbe il disco: solo avvisi ed errori.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     return asyncio.run(_main_async(args))
 
 
