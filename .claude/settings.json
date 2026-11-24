@@ -21,5 +21,18 @@
       "Bash(cat .env*)",
       "Bash(cat ~/.trade-secrets/*)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|Write|NotebookEdit|Grep|Glob|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect_secrets.py"
+          }
+        ]
+      }
+    ]
   }
 }

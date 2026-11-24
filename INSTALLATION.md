@@ -35,19 +35,18 @@ echo "--- claude code ---"; command -v claude >/dev/null && claude --version || 
 
 ---
 
-## Passi successivi (verranno dettagliati uno alla volta dopo la verifica)
+## Mappa dei passi (aggiornata al 24/11/2026)
 
-Questi passi sono la *mappa*; i comandi esatti verranno confermati in base al risultato del passo 1.
-
-| Passo | Cosa | Fonte ufficiale |
+| Passo | Cosa | Stato |
 |---|---|---|
-| 2 | Strumenti da riga di comando Apple (contengono `git`): `xcode-select --install` | Apple |
-| 3 | Claude Code nel Terminale, se non già presente. Comando ufficiale: `curl -fsSL https://claude.ai/install.sh \| bash` (alternativa: `brew install --cask claude-code`) | https://code.claude.com/docs/en/setup |
-| 4 | Creare la cartella di lavoro `~/Progetti/trade` e scaricare il repository con `git clone` | GitHub |
-| 5 | Installare `uv` (gestisce Python): `curl -LsSf https://astral.sh/uv/install.sh \| sh` | https://github.com/astral-sh/uv |
-| 6 | Aprire Claude Code nella cartella (`cd ~/Progetti/trade && claude`) e verificare che legga CLAUDE.md | Claude Code |
-| 7 | Verificare che i permessi di sicurezza funzionino (Claude **non** deve riuscire a leggere un `.env` di prova) | `.claude/settings.json` |
-| 8 | Scheletro del progetto e primo `uv run pytest` | questo repository |
+| 1 | Verifica del Mac | ✅ |
+| 2 | Installare `uv` (comando ufficiale `curl -LsSf https://astral.sh/uv/install.sh \| sh`, fonte https://github.com/astral-sh/uv) | ✅ |
+| 3 | Scaricare il progetto in `~/tradd/Trade` con `git clone` e installare Python 3.12 con `uv python install 3.12` | ✅ |
+| 4 | Aggiornare il progetto sul Mac (`git pull`), `uv sync`, `uv run pytest` | ⏳ prossimo |
+| 5 | Verificare che Claude **non** riesca a leggere un `.env` di prova (permessi + hook) | ⏳ |
+| 6 | Claude Code da terminale (facoltativo: oggi lavoriamo tramite l'app Claude). Comando ufficiale: `curl -fsSL https://claude.ai/install.sh \| bash` (fonte https://code.claude.com/docs/en/setup) | facoltativo |
+
+Gli strumenti da riga di comando Apple e git erano già presenti; Homebrew non serve.
 
 Prima di ogni comando che scarica uno script (`curl … | sh`), Claude mostrerà da quale sito ufficiale proviene e cosa fa.
 

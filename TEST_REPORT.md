@@ -4,7 +4,7 @@
 
 ## Stato attuale
 
-Nessun codice ancora: **nessun test eseguito**. Questo file verrà compilato a partire dalla Fase 1.
+Fase 1 in corso: primi test sullo scheletro del progetto.
 
 ## Cosa verrà registrato qui
 
@@ -29,3 +29,11 @@ Risultato: …
 Note / problemi: …
 Decisione: …
 ```
+
+## Registro
+
+### 2026-11-24 — Test unitari, scheletro del progetto (ambiente cloud)
+Comando: `uv run --python 3.12 pytest -q`
+Risultato: **33 passati, 0 falliti**.
+Copertura: modalità operative (default OFF, kill switch sempre ammesso, denaro reale solo con approvazione, LIVE solo da LIVE_PILOT) e hook di sicurezza (19 accessi sensibili bloccati, 6 operazioni normali ammesse, input non valido bloccato).
+Decisione: da ripetere sul Mac di Danish (Fase 1, passo 4).

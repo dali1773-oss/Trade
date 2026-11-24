@@ -28,10 +28,12 @@
 - [ ] Claude Code locale collegato al repository
 - [x] `uv` 0.13.9 e Python 3.12.16 installati (24/11/2026)
 - [x] Repository clonato sul Mac in `~/tradd/Trade`
-- [ ] Scheletro progetto (`pyproject.toml`, `src/trade/`, `tests/`)
-- [ ] Hook `PreToolUse` di sicurezza + test che `.env` non è leggibile
+- [x] Scheletro progetto (`pyproject.toml`, `src/trade/`, `tests/`) — 33 test passano nel cloud
+- [ ] Verifica sul Mac: `uv run pytest` passa
+- [x] Hook `PreToolUse` di sicurezza (`.claude/hooks/protect_secrets.py`) con test
+- [ ] Verifica sul Mac: Claude non riesce a leggere un `.env` di prova
 - [ ] `gitleaks` e `pip-audit` in CI (GitHub Actions)
-- [ ] Subagent di sviluppo in `.claude/agents/`
+- [x] Subagent di sviluppo in `.claude/agents/` (security-reviewer, backtest-analyst, docs-keeper)
 
 ### Fase 2 — Data Recorder
 - [ ] Modelli Pydantic dei messaggi
