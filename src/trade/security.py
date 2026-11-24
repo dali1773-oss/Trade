@@ -13,6 +13,7 @@ import asyncio
 import logging
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from decimal import Decimal
 from pathlib import Path
 
 import httpx
@@ -59,6 +60,16 @@ async def gather_security_info(
             fields["top10_holders_pct"] = await helius.top10_pct(mint, mi.supply, set(pool_addresses or ()))
         except SourceError as exc:
             notes.append(f"concentrazione: {exc}")
+        try:
+            creator = await helius.find_creator(mint)
+            if creator is None:
+                notes.append("creatore: storia troppo lunga o vuota, quota sconosciuta")
+            elif mi.supply > 0:
+                bal = await helius.owner_balance(creator, mint)
+                fields["creator_holding_pct"] = (Decimal(bal) * 100 / Decimal(mi.supply)).quantize(Decimal("0.01"))
+                notes.append(f"creatore: {creator[:6]}… (primo firmatario del mint)")
+        except SourceError as exc:
+            notes.append(f"creatore: {exc}")
     except (SourceError, KeyError, ValueError, TypeError) as exc:
         notes.append(f"mint: {exc}")
 
@@ -68,9 +79,6 @@ async def gather_security_info(
     if sell.note != "ok":
         notes.append(f"vendibilità: {sell.note}")
 
-    # creator_holding_pct: richiede di sapere chi ha creato il token (prossimo passo,
-    # es. RugCheck o metadati pump.fun). Finché manca resta None -> UNKNOWN (blocco).
-    notes.append("quota del creatore: non ancora implementata (blocca per prudenza)")
     return SecurityReport(TokenSecurityInfo(**fields), notes)  # type: ignore[arg-type]
 
 

@@ -4,7 +4,7 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 
 ## [Non rilasciato]
 ### Aggiunto
-- Fase 3: `sources/helius.py` (solo metodi RPC di lettura, gli altri vengono rifiutati), `sources/jupiter.py` (solo quotazioni), `security.py` e comando `trade-scan`. Dato mancante = blocco; la quota del creatore non è ancora calcolata, quindi per ora nessun token risulta PASS.
+- Fase 3: `sources/helius.py` (solo metodi RPC di lettura, gli altri vengono rifiutati), `sources/jupiter.py` (solo quotazioni), `security.py` e comando `trade-scan`. Dato mancante = blocco. Quota del creatore dal primo firmatario del mint; esclusi dal top 10 i conti di pool e curve di lancio.
 - `trade-check-keys`: controlla che le chiavi Helius e Jupiter funzionino senza mai mostrarle (solo richieste di lettura) (`src/trade/config.py`, `src/trade/check_keys.py`).
 - Fase 3, regole anti‑truffa (`src/trade/scam.py`): verdetto PASS/FAIL/UNKNOWN, si compra solo con PASS; soglie da RISK_MANAGEMENT §4; controllo dei nomi imitati (es. CHIRSTMAS vs CHRISTMAS). Test in `tests/test_scam.py`.
 - Fase 2, registratore dati in sola lettura: `src/trade/sources/` (DexScreener, GeckoTerminal), `store.py` (SQLite), `recorder.py` e comando `trade-record`. Dipendenze: httpx, pydantic.

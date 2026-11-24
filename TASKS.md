@@ -59,8 +59,9 @@
 - [x] Prova di rivendibilità via quotazioni Jupiter (giro compra→rivendi, nessuno swap)
 - [x] Comando `uv run trade-scan <token>`: verdetto anti‑truffa completo
 - [x] Verifica con risposte reali di Helius/Jupiter sul Mac (BONK e un token pump.fun)
-- [ ] Quota del creatore (oggi sconosciuta → blocca sempre): RugCheck o metadati pump.fun
-- [ ] Escludere dal top 10 anche i conti di pool Raydium/Meteora ed exchange (su BONK top 10 = 40,55%, probabile falso allarme)
+- [x] Quota del creatore: primo firmatario della prima transazione del mint (Helius); oltre 3000 transazioni resta sconosciuta → blocca
+- [x] Esclusi dal top 10 i conti di pool e curve (Raydium, Orca, Meteora, PumpSwap, pump.fun)
+- [ ] Exchange centralizzati nel top 10 (rilevante solo per token vecchi come BONK)
 - [ ] Integrazione RugCheck e GoPlus
 - [ ] Etichettatura 24 h / 7 giorni e report falsi negativi
 

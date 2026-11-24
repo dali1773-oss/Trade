@@ -54,7 +54,11 @@ def owners_result(addrs):
         {"data": {"parsed": {"info": {"owner": owner[a]}, "type": "account"}}} for a in addrs]}
 
 
-def fake_api(*, mint=None, sell_status=200, buy_status=200, sol_back="29400000", seen=None):
+CREATOR = "Creator111111111111111111111111111111111111"
+
+
+def fake_api(*, mint=None, sell_status=200, buy_status=200, sol_back="29400000", seen=None,
+             creator_balance="20000000", sig_pages=1):
     mint = mint or mint_result()
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -70,8 +74,31 @@ def fake_api(*, mint=None, sell_status=200, buy_status=200, sol_back="29400000",
             if method == "getTokenLargestAccounts":
                 return httpx.Response(200, json={"jsonrpc": "2.0", "id": 1, "result": LARGEST})
             if method == "getMultipleAccounts":
+                addrs, opts = body["params"]
+                if opts["encoding"] == "base64":
+                    # Pool (account del programma PumpSwap) e wallet normali (System Program).
+                    prog = {POOL: "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"}
+                    return httpx.Response(200, json={"jsonrpc": "2.0", "id": 1, "result": {"value": [
+                        {"owner": prog.get(a, "11111111111111111111111111111111")} for a in addrs]}})
                 return httpx.Response(200, json={"jsonrpc": "2.0", "id": 1,
-                                                 "result": owners_result(body["params"][0])})
+                                                 "result": owners_result(addrs)})
+            if method == "getSignaturesForAddress":
+                before = body["params"][1].get("before")
+                page = 0 if before is None else int(before.split("-")[1]) // 1000
+                n = 1000 if page < sig_pages - 1 else 3
+                start = page * 1000
+                sigs = [{"signature": f"sig-{start + i + 1}"} for i in range(n)]
+                return httpx.Response(200, json={"jsonrpc": "2.0", "id": 1, "result": sigs})
+            if method == "getTransaction":
+                return httpx.Response(200, json={"jsonrpc": "2.0", "id": 1, "result": {
+                    "transaction": {"message": {"accountKeys": [
+                        {"pubkey": CREATOR, "signer": True, "writable": True},
+                        {"pubkey": MINT, "signer": True, "writable": True}]}}}})
+            if method == "getTokenAccountsByOwner":
+                assert body["params"][0] == CREATOR and body["params"][1] == {"mint": MINT}
+                return httpx.Response(200, json={"jsonrpc": "2.0", "id": 1, "result": {"value": [
+                    {"pubkey": "CreatorATA", "account": {"data": {"parsed": {"info": {
+                        "tokenAmount": {"amount": creator_balance}}}}}}]}})
             return httpx.Response(200, json={"jsonrpc": "2.0", "id": 1, "error": {"message": "no"}})
         if host == "api.jup.ag":
             assert request.method == "GET"
@@ -128,6 +155,15 @@ def test_parse_mint_rejects_bad(bad):
         parse_mint_info(bad)
 
 
+def test_liquidity_owners_detects_amm_accounts_and_authorities():
+    from trade.sources.helius import liquidity_owners
+
+    progs = {"PoolPda": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+             "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1": None,
+             "Whale": "11111111111111111111111111111111"}
+    assert liquidity_owners(progs, set()) == {"PoolPda", "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1"}
+
+
 def test_top_holders_excludes_pool_and_keeps_unknown_owners():
     accs = [LargestAccount("VaultA", 600), LargestAccount("W1", 50), LargestAccount("W2", 40)]
     pct = top_holders_pct(accs, {"VaultA": POOL, "W1": "a"}, 1000, {POOL})
@@ -168,7 +204,7 @@ async def test_gather_all_good():
     assert i.mint_authority_active is False and i.freeze_authority_active is False
     assert i.top10_holders_pct == Decimal("10.00")
     assert i.sell_route_found is True and i.sell_price_impact_pct == Decimal("2.00")
-    assert i.creator_holding_pct is None  # non ancora implementato -> blocca
+    assert i.creator_holding_pct == Decimal("2.00")
     # Nessuna richiesta di scrittura: Jupiter solo GET di quotazioni, Helius solo metodi di lettura.
     assert all(r.url.path != "/swap/v1/swap" for r in seen)
 
@@ -194,14 +230,34 @@ async def test_rate_limited_jupiter_is_unknown():
     assert rep.info.sell_route_found is None
 
 
-async def test_scan_end_to_end_blocks_until_creator_check_exists(tmp_path):
+async def test_scan_end_to_end_all_good_passes(tmp_path):
     f = tmp_path / "settings"
     f.write_text(f"HELIUS_API_KEY={KEY_H}\nJUPITER_API_KEY={KEY_J}\n")
     verdict, report, msg = await scan(MINT, f, transport=fake_api())
     assert msg == "ok"
-    # Tutto buono tranne la quota del creatore (sconosciuta) -> UNKNOWN, quindi niente acquisto.
-    assert verdict.verdict is Verdict.UNKNOWN
-    assert [c.name for c in verdict.checks if c.verdict is not Verdict.PASS] == ["quota_creatore"]
+    assert verdict.verdict is Verdict.PASS, verdict.reasons
+
+
+async def test_creator_holding_too_much_fails(tmp_path):
+    f = tmp_path / "settings"
+    f.write_text(f"HELIUS_API_KEY={KEY_H}\nJUPITER_API_KEY={KEY_J}\n")
+    verdict, _, _ = await scan(MINT, f, transport=fake_api(creator_balance="200000000"))
+    assert verdict.verdict is Verdict.FAIL
+    assert any(r.startswith("quota_creatore") for r in verdict.reasons)
+
+
+async def test_creator_found_across_pages():
+    async with make_client(fake_api(sig_pages=2)) as client:
+        h, _ = clients(client)
+        assert await h.find_creator(MINT) == CREATOR
+
+
+async def test_creator_unknown_when_history_too_long():
+    async with make_client(fake_api(sig_pages=10)) as client:
+        h, j = clients(client)
+        assert await h.find_creator(MINT) is None
+        rep = await gather_security_info(MINT, helius=h, jupiter=j, pool_addresses={POOL})
+    assert rep.info.creator_holding_pct is None
 
 
 async def test_scan_with_mint_authority_fails(tmp_path):
