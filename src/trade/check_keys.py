@@ -19,7 +19,7 @@ from trade.sources import make_client
 HELIUS_RPC = "https://mainnet.helius-rpc.com/"
 JUPITER_QUOTE = "https://api.jup.ag/swap/v1/quote"
 SOL_MINT = "So11111111111111111111111111111111111111112"
-USDC_MINT = "EPjFWvd5wAvzSyT3hDtFGgEWTLkVqQKmSHjCvG5UpUCZ"
+USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
 
 
 async def check_helius(client: httpx.AsyncClient, key: str | None) -> str:

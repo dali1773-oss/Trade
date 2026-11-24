@@ -80,3 +80,10 @@ def test_cli_never_prints_key(tmp_path, capsys, monkeypatch):
     out = capsys.readouterr().out
     assert FAKE_KEY not in out
     assert "ERRORE DI RETE" in out
+
+
+def test_known_mints():
+    from trade.check_keys import SOL_MINT, USDC_MINT
+
+    assert SOL_MINT == "So11111111111111111111111111111111111111112"
+    assert USDC_MINT == "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"  # USDC ufficiale (Circle)
