@@ -224,6 +224,35 @@ def liquidity_owners(owner_programs: dict[str, str | None], pool_addresses: set[
     }
 
 
+@dataclass(frozen=True)
+class HolderRow:
+    """Una riga di diagnostica: chi c'è tra i conti più grandi."""
+
+    pct: Decimal
+    owner: str | None
+    owner_program: str | None
+    excluded: bool
+
+    def describe(self) -> str:
+        who = (self.owner or "?")[:6]
+        prog = PROGRAM_NAMES.get(self.owner_program or "", (self.owner_program or "nessun account")[:6])
+        tag = "escluso (liquidità)" if self.excluded else "contato"
+        return f"{self.pct}% · proprietario {who}… · programma {prog} · {tag}"
+
+
+PROGRAM_NAMES = {
+    "11111111111111111111111111111111": "wallet normale",
+    "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8": "Raydium AMM v4",
+    "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C": "Raydium CPMM",
+    "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK": "Raydium CLMM",
+    "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc": "Orca Whirlpool",
+    "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo": "Meteora DLMM",
+    "Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB": "Meteora pools",
+    "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA": "PumpSwap",
+    "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P": "pump.fun",
+}
+
+
 class HeliusClient:
     def __init__(
         self, client: httpx.AsyncClient, api_key: str, limiter: MinIntervalLimiter | None = None
@@ -269,9 +298,15 @@ class HeliusClient:
         return parse_mint_info(await self.rpc("getAccountInfo", [mint, {"encoding": "jsonParsed"}]))
 
     async def top10_pct(self, mint: str, supply: int, pool_addresses: set[str]) -> Decimal | None:
+        pct, _ = await self.top10_with_rows(mint, supply, pool_addresses)
+        return pct
+
+    async def top10_with_rows(
+        self, mint: str, supply: int, pool_addresses: set[str]
+    ) -> tuple[Decimal | None, list[HolderRow]]:
         accounts = parse_largest_accounts(await self.rpc("getTokenLargestAccounts", [mint]))
         if not accounts:
-            return None
+            return None, []
         addrs = [a.address for a in accounts]
         owners = parse_account_owners(
             await self.rpc("getMultipleAccounts", [addrs, {"encoding": "jsonParsed"}]), addrs
@@ -281,7 +316,17 @@ class HeliusClient:
             await self.rpc("getMultipleAccounts", [unique, {"encoding": "base64", "dataSlice": {"offset": 0, "length": 0}}]),
             unique,
         ) if unique else {}
-        return top_holders_pct(accounts, owners, supply, liquidity_owners(programs, pool_addresses))
+        excluded = liquidity_owners(programs, pool_addresses)
+        rows = [
+            HolderRow(
+                pct=(Decimal(a.amount) * 100 / Decimal(supply)).quantize(Decimal("0.01")) if supply > 0 else Decimal(0),
+                owner=owners.get(a.address),
+                owner_program=programs.get(owners.get(a.address) or ""),
+                excluded=owners.get(a.address) in excluded,
+            )
+            for a in sorted(accounts, key=lambda a: a.amount, reverse=True)
+        ]
+        return top_holders_pct(accounts, owners, supply, excluded), rows
 
     async def find_creator(self, mint: str) -> str | None:
         """Pagatore della prima transazione del mint. None se ce ne sono troppe."""
@@ -302,7 +347,7 @@ class HeliusClient:
             return None  # storia troppo lunga: non sappiamo chi è il creatore
         if oldest is None:
             return None
-        tx = await self.rpc("getTransaction", [oldest, {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0}])
+        tx = await self.rpc("getTransaction", [oldest, {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 1}])
         return parse_fee_payer(tx)
 
     async def owner_balance(self, owner: str, mint: str) -> int:

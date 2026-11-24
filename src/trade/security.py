@@ -57,7 +57,10 @@ async def gather_security_info(
         )
         try:
             # I conti di proprietà del pool sono liquidità, non "balene".
-            fields["top10_holders_pct"] = await helius.top10_pct(mint, mi.supply, set(pool_addresses or ()))
+            pct, rows = await helius.top10_with_rows(mint, mi.supply, set(pool_addresses or ()))
+            fields["top10_holders_pct"] = pct
+            for row in rows[:5]:
+                notes.append(f"grande possessore: {row.describe()}")
         except SourceError as exc:
             notes.append(f"concentrazione: {exc}")
         try:

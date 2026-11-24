@@ -205,6 +205,9 @@ async def test_gather_all_good():
     assert i.top10_holders_pct == Decimal("10.00")
     assert i.sell_route_found is True and i.sell_price_impact_pct == Decimal("2.00")
     assert i.creator_holding_pct == Decimal("2.00")
+    holders = [n for n in rep.notes if n.startswith("grande possessore")]
+    assert "60.00%" in holders[0] and "PumpSwap" in holders[0] and "escluso" in holders[0]
+    assert "wallet normale" in holders[1] and "contato" in holders[1]
     # Nessuna richiesta di scrittura: Jupiter solo GET di quotazioni, Helius solo metodi di lettura.
     assert all(r.url.path != "/swap/v1/swap" for r in seen)
 
