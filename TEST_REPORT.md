@@ -4,7 +4,7 @@
 
 ## Stato attuale
 
-Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 76 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
+Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 77 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
 
 ### 2026-11-24 — Test unitari (regole anti‑truffa)
 Comando: `uv run pytest -q`

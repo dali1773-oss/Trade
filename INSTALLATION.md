@@ -61,3 +61,4 @@ Prima di ogni comando che scarica uno script (`curl … | sh`), Claude mostrerà
 | 2026-11-24 | Passo 5: protezioni | ✅ | Danish ha copiato regole e hook in `~/.claude/`; 5 prove di accesso ai segreti bloccate |
 | 2026-11-24 | `uv` nel Terminale | ✅ | aggiunta in `~/.zshrc` la riga `export PATH="$HOME/.local/bin:$PATH"` (prima il Terminale non trovava `uv`) |
 | 2026-11-24 | Chiave Helius (Free) | ✅ | salvata solo in `.env` (permessi 600, escluso da git) con `read -s`; prima chiave finita per errore in uno screenshot → eliminata su Helius e sostituita; `uv run trade-check-keys` → `Helius: OK` |
+| 2026-11-24 | Chiave Jupiter (Free) | ✅ | salvata solo in `.env` con `read -s` e controllo del formato; `uv run trade-check-keys` → `Helius: OK`, `Jupiter: OK` |
