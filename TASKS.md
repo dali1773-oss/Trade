@@ -55,8 +55,12 @@
 - [x] Regole deterministiche con veto (`src/trade/scam.py`): liquidità, età pool, mint/freeze, Token‑2022, concentrazione, vendibilità, nomi imitati. Dato mancante = blocco
 - [x] Chiavi gratuite Helius e Jupiter salvate in `.env` e verificate (`uv run trade-check-keys`)
 - [x] Registrazione continua avviata sul Mac in sottofondo (log in `data/recorder.log`, stop con `pkill -INT -f trade-record`)
-- [ ] Client Helius per i dati on‑chain (mint/freeze/Token‑2022, holder) — serve chiave gratuita Helius in `.env`
-- [ ] Simulazione vendita via Jupiter — serve chiave gratuita Jupiter in `.env`
+- [x] Client Helius (sola lettura): mint/freeze, Token‑2022 (tassa, hook, delegato permanente), concentrazione top 10 escluso il pool
+- [x] Prova di rivendibilità via quotazioni Jupiter (giro compra→rivendi, nessuno swap)
+- [x] Comando `uv run trade-scan <token>`: verdetto anti‑truffa completo
+- [ ] Verifica con risposte reali di Helius/Jupiter sul Mac
+- [ ] Quota del creatore (oggi sconosciuta → blocca sempre): RugCheck o metadati pump.fun
+- [ ] Escludere dal top 10 anche i conti dei pool Raydium/Meteora (oggi solo il pool che possiede direttamente il conto)
 - [ ] Integrazione RugCheck e GoPlus
 - [ ] Etichettatura 24 h / 7 giorni e report falsi negativi
 

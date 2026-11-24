@@ -4,7 +4,12 @@
 
 ## Stato attuale
 
-Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 78 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
+Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 95 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
+
+### 2026-11-24 — Test unitari (Helius, Jupiter, trade-scan)
+Comando: `uv run pytest -q`
+Risultato: 95 passati, 0 falliti (nuovi: `tests/test_security.py`).
+Note: risposte finte nel formato standard Solana JSON‑RPC e Jupiter; da confermare con risposte reali. Verificato che la chiave non compaia negli errori e che Helius rifiuti metodi di scrittura.
 
 ### 2026-11-24 — Test unitari (regole anti‑truffa)
 Comando: `uv run pytest -q`
