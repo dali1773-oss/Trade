@@ -46,7 +46,8 @@
 - [x] Client GeckoTerminal senza chiave (20 s tra le chiamate); chiave Demo: da fare
 - [x] Database SQLite con eventi append‑only, token e snapshot
 - [x] Comando `uv run trade-record` (`--once`, `--interval`)
-- [ ] Primo giro di registrazione sul Mac
+- [x] Primo giro di registrazione sul Mac (24/11/2026: 44 token, 42 snapshot, 0 errori)
+- [ ] Registrazione continua sul Mac (`caffeinate -i uv run trade-record --interval 60`) — avvio da parte di Danish
 - [ ] Client Helius (Free) + WebSocket nuovi pool
 - [ ] 7 giorni di registrazione stabile
 

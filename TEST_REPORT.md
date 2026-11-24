@@ -63,3 +63,9 @@ Comando: `uv run --python 3.12 pytest -q`
 Risultato: **52 passati, 0 falliti**.
 Copertura nuova: parser DexScreener/GeckoTerminal su risposte reali (valori mancanti restano "sconosciuti", mai zero), ciclo completo con HTTP finto, errore di una fonte registrato senza fermare il ciclo, tabella eventi non modificabile, limitatore di frequenza, solo richieste GET.
 Decisione: provare un ciclo reale sul Mac.
+
+### 2026-11-24 — Registratore dati, primo ciclo reale sul Mac
+Versione/commit: ed3bead · Comandi: `uv sync`, `uv run pytest -q` (52 passati), `uv run trade-record --once`
+Risultato: 1 ciclo in ~30 s, **44 token nuovi, 42 snapshot, 0 errori**; 23 richieste GET, tutte HTTP 200, intervallo ~1,5 s su DexScreener. Database 128 KB.
+Osservazioni: i pool ancora sulla curva di pump.fun hanno spesso `liquidity_usd` mancante (da trattare come sconosciuto nei filtri); già visibili nomi imitati (es. "CHIRSTMAS" accanto a "CHRISTMAS"), utile per lo Scam Detection.
+Decisione: avviare la registrazione continua per 7 giorni.
