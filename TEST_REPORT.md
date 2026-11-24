@@ -6,6 +6,11 @@
 
 Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 99 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
 
+### 2026-11-24 — Terza prova (commit 022d830) e registratore
+- Autorità Meteora DBC confermata: su Optimus FhVo3m… ora risulta "escluso (liquidità)".
+- ATX: proprietario del 100% = ALwtAcW5jWJDVJC1frveLQA51CT7hWfbrnH1Gao8rUiY, senza account (PDA di un programma non ancora identificato) → resta contato, quindi blocca.
+- Registratore: 273 token e 605 snapshot alle 21:15. Il Mac è andato in stop tra le 20:58 e le 21:15 (coperchio chiuso: `caffeinate -i` non lo impedisce); errori di rete durante lo stop, poi ripresa automatica.
+
 ### 2026-11-24 — Seconda prova reale di trade-scan (commit 14e48bb)
 Risultato: 4 token nuovi, tutti FAIL.
 - Quota del creatore ora calcolata anche sulle transazioni "versione 1" (pump.fun).
