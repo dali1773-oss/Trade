@@ -55,4 +55,4 @@ Prima di ogni comando che scarica uno script (`curl … | sh`), Claude mostrerà
 
 | Data | Passo | Esito | Note |
 |---|---|---|---|
-| — | — | — | nessuna installazione ancora eseguita |
+| 2026-11-24 | Passo 1: verifica | ✅ | macOS 14.6, Apple Silicon (arm64); strumenti Apple e git 2.39.5 presenti; Python di sistema 3.9.6 (troppo vecchio, useremo uv); Node v26.13.1; mancano uv, Homebrew e Claude Code da terminale; disco: 23 GB liberi su 228 (89% pieno) |

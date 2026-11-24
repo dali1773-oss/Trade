@@ -19,12 +19,12 @@
 
 - [ ] Revisione e approvazione della PR dei documenti — **Danish**
 - [ ] Approvazione dei limiti di rischio proposti (RISK_MANAGEMENT §4–5) — **Danish**
-- [ ] Fase 1, passo 1: verifica del Mac (Danish esegue i comandi e incolla il risultato)
+- [x] Fase 1, passo 1: verifica del Mac (24/11/2026, vedi INSTALLATION.md)
 
 ## ⏳ Da fare
 
 ### Fase 1 — Ambiente
-- [ ] Strumenti da riga di comando Apple / git
+- [x] Strumenti da riga di comando Apple / git (già presenti)
 - [ ] Claude Code locale collegato al repository
 - [ ] `uv` e Python 3.12+
 - [ ] Scheletro progetto (`pyproject.toml`, `src/trade/`, `tests/`)
