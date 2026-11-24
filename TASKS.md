@@ -41,11 +41,13 @@
 - [x] Subagent di sviluppo in `.claude/agents/` (security-reviewer, backtest-analyst, docs-keeper)
 
 ### Fase 2 — Data Recorder
-- [ ] Modelli Pydantic dei messaggi
-- [ ] Client DexScreener con rate limit
-- [ ] Client GeckoTerminal (chiave Demo)
+- [x] Modelli dei dati (`TokenProfile`, `PoolSnapshot`) — 24/11/2026
+- [x] Client DexScreener con limite di frequenza (senza chiave)
+- [x] Client GeckoTerminal senza chiave (20 s tra le chiamate); chiave Demo: da fare
+- [x] Database SQLite con eventi append‑only, token e snapshot
+- [x] Comando `uv run trade-record` (`--once`, `--interval`)
+- [ ] Primo giro di registrazione sul Mac
 - [ ] Client Helius (Free) + WebSocket nuovi pool
-- [ ] Database SQLite + tabella eventi append‑only
 - [ ] 7 giorni di registrazione stabile
 
 ### Fase 3 — Scam Detection

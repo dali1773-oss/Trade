@@ -1,0 +1,206 @@
+"""Archivio SQLite del registratore (ARCHITECTURE.md §7).
+
+- `events`: registro append-only (un trigger impedisce modifiche e cancellazioni).
+- `tokens`: token osservati, con prima/ultima osservazione.
+- `pool_snapshots`: fotografie dei pool nel tempo (base per backtest ed etichettatura).
+"""
+
+from __future__ import annotations
+
+import json
+import sqlite3
+from datetime import UTC, datetime, timedelta
+from decimal import Decimal
+from pathlib import Path
+from typing import Any
+
+from trade.models import PoolSnapshot, TokenProfile
+
+SCHEMA = """
+PRAGMA journal_mode=WAL;
+PRAGMA foreign_keys=ON;
+
+CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    source TEXT,
+    payload TEXT NOT NULL
+);
+CREATE TRIGGER IF NOT EXISTS events_no_update BEFORE UPDATE ON events
+BEGIN SELECT RAISE(ABORT, 'events e'' append-only'); END;
+CREATE TRIGGER IF NOT EXISTS events_no_delete BEFORE DELETE ON events
+BEGIN SELECT RAISE(ABORT, 'events e'' append-only'); END;
+
+CREATE TABLE IF NOT EXISTS tokens (
+    chain TEXT NOT NULL,
+    token_address TEXT NOT NULL,
+    first_seen TEXT NOT NULL,
+    last_seen TEXT NOT NULL,
+    first_source TEXT NOT NULL,
+    url TEXT,
+    description TEXT,
+    links TEXT,
+    last_snapshot_at TEXT,
+    PRIMARY KEY (chain, token_address)
+);
+
+CREATE TABLE IF NOT EXISTS pool_snapshots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    observed_at TEXT NOT NULL,
+    source TEXT NOT NULL,
+    chain TEXT NOT NULL,
+    dex TEXT,
+    pool_address TEXT NOT NULL,
+    base_token TEXT NOT NULL,
+    quote_token TEXT,
+    base_symbol TEXT,
+    price_usd TEXT,
+    price_native TEXT,
+    liquidity_usd TEXT,
+    fdv_usd TEXT,
+    volume_m5_usd TEXT,
+    volume_h1_usd TEXT,
+    volume_h24_usd TEXT,
+    buys_m5 INTEGER,
+    sells_m5 INTEGER,
+    buys_h1 INTEGER,
+    sells_h1 INTEGER,
+    pool_created_at TEXT,
+    extra TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_snap_token ON pool_snapshots(chain, base_token, observed_at);
+CREATE INDEX IF NOT EXISTS idx_snap_pool ON pool_snapshots(chain, pool_address, observed_at);
+"""
+
+
+def _iso(dt: datetime | None) -> str | None:
+    return dt.astimezone(UTC).isoformat() if dt else None
+
+
+def _dec(value: Decimal | None) -> str | None:
+    # I prezzi restano testo per non perdere precisione.
+    return str(value) if value is not None else None
+
+
+def _json_default(value: Any) -> Any:
+    if isinstance(value, Decimal):
+        return str(value)
+    if isinstance(value, datetime):
+        return _iso(value)
+    raise TypeError(type(value).__name__)
+
+
+class Store:
+    def __init__(self, path: str | Path) -> None:
+        if str(path) != ":memory:":
+            Path(path).parent.mkdir(parents=True, exist_ok=True)
+        self.conn = sqlite3.connect(str(path))
+        self.conn.row_factory = sqlite3.Row
+        self.conn.executescript(SCHEMA)
+
+    def close(self) -> None:
+        self.conn.close()
+
+    # --- eventi -----------------------------------------------------------
+    def log_event(self, kind: str, payload: dict[str, Any], source: str | None = None) -> None:
+        self.conn.execute(
+            "INSERT INTO events (ts, kind, source, payload) VALUES (?, ?, ?, ?)",
+            (_iso(datetime.now(UTC)), kind, source, json.dumps(payload, default=_json_default)),
+        )
+        self.conn.commit()
+
+    # --- token ------------------------------------------------------------
+    def upsert_token(self, profile: TokenProfile) -> bool:
+        """Registra un token. Restituisce True se è la prima volta che lo vediamo."""
+        now = _iso(profile.observed_at)
+        cur = self.conn.execute(
+            "INSERT OR IGNORE INTO tokens (chain, token_address, first_seen, last_seen, "
+            "first_source, url, description, links) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                profile.chain,
+                profile.token_address,
+                now,
+                now,
+                profile.source,
+                profile.url,
+                profile.description,
+                json.dumps(list(profile.links)),
+            ),
+        )
+        is_new = cur.rowcount == 1
+        if not is_new:
+            self.conn.execute(
+                "UPDATE tokens SET last_seen = ? WHERE chain = ? AND token_address = ?",
+                (now, profile.chain, profile.token_address),
+            )
+        self.conn.commit()
+        return is_new
+
+    def ensure_token(self, chain: str, token_address: str, source: str, seen_at: datetime) -> bool:
+        return self.upsert_token(
+            TokenProfile(source=source, chain=chain, token_address=token_address, observed_at=seen_at)
+        )
+
+    def tokens_to_refresh(
+        self, chain: str, limit: int, *, max_age: timedelta = timedelta(days=7)
+    ) -> list[str]:
+        """Token visti negli ultimi `max_age`, prima quelli fotografati da più tempo."""
+        cutoff = _iso(datetime.now(UTC) - max_age)
+        rows = self.conn.execute(
+            "SELECT token_address FROM tokens WHERE chain = ? AND first_seen >= ? "
+            "ORDER BY COALESCE(last_snapshot_at, '') ASC, first_seen ASC LIMIT ?",
+            (chain, cutoff, limit),
+        ).fetchall()
+        return [row["token_address"] for row in rows]
+
+    def mark_snapshot(self, chain: str, token_address: str, at: datetime) -> None:
+        self.conn.execute(
+            "UPDATE tokens SET last_snapshot_at = ? WHERE chain = ? AND token_address = ?",
+            (_iso(at), chain, token_address),
+        )
+        self.conn.commit()
+
+    # --- snapshot ---------------------------------------------------------
+    def add_snapshots(self, snapshots: list[PoolSnapshot]) -> int:
+        rows = [
+            (
+                _iso(s.observed_at),
+                s.source,
+                s.chain,
+                s.dex,
+                s.pool_address,
+                s.base_token,
+                s.quote_token,
+                s.base_symbol,
+                _dec(s.price_usd),
+                _dec(s.price_native),
+                _dec(s.liquidity_usd),
+                _dec(s.fdv_usd),
+                _dec(s.volume_m5_usd),
+                _dec(s.volume_h1_usd),
+                _dec(s.volume_h24_usd),
+                s.buys_m5,
+                s.sells_m5,
+                s.buys_h1,
+                s.sells_h1,
+                _iso(s.pool_created_at),
+                json.dumps(s.extra, default=_json_default),
+            )
+            for s in snapshots
+        ]
+        self.conn.executemany(
+            "INSERT INTO pool_snapshots (observed_at, source, chain, dex, pool_address, base_token, "
+            "quote_token, base_symbol, price_usd, price_native, liquidity_usd, fdv_usd, "
+            "volume_m5_usd, volume_h1_usd, volume_h24_usd, buys_m5, sells_m5, buys_h1, sells_h1, "
+            "pool_created_at, extra) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            rows,
+        )
+        self.conn.commit()
+        return len(rows)
+
+    def counts(self) -> dict[str, int]:
+        return {
+            table: self.conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+            for table in ("events", "tokens", "pool_snapshots")
+        }

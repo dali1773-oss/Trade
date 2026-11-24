@@ -57,3 +57,9 @@ Ambiente: sessione nuova di Claude Code sul Mac, con regole in `~/.claude/settin
 | 6 | Read di `.env.example` (controprova) | ammessa | — |
 Note: un primo tentativo è stato annullato perché la sessione era aperta in `tradd` (senza regole di progetto); l'hook blocca anche comandi innocui che citano `.env` (comportamento prudente voluto).
 Decisione: protezioni attive su due livelli. Passo 5 superato.
+
+### 2026-11-24 — Registratore dati, test automatici (ambiente cloud)
+Comando: `uv run --python 3.12 pytest -q`
+Risultato: **52 passati, 0 falliti**.
+Copertura nuova: parser DexScreener/GeckoTerminal su risposte reali (valori mancanti restano "sconosciuti", mai zero), ciclo completo con HTTP finto, errore di una fonte registrato senza fermare il ciclo, tabella eventi non modificabile, limitatore di frequenza, solo richieste GET.
+Decisione: provare un ciclo reale sul Mac.

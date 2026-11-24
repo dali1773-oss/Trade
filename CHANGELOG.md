@@ -4,6 +4,8 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 
 ## [Non rilasciato]
 ### Aggiunto
+- Fase 2, registratore dati in sola lettura: `src/trade/sources/` (DexScreener, GeckoTerminal), `store.py` (SQLite), `recorder.py` e comando `trade-record`. Dipendenze: httpx, pydantic.
+- Test con risposte reali delle API registrate il 24/11/2026 (`tests/fixtures/`).
 - Scheletro del progetto Python (`pyproject.toml`, `uv.lock`, `src/trade/`, `tests/`).
 - `src/trade/modes.py`: modalità operative; il sistema parte in OFF e le modalità con denaro reale richiedono l'approvazione esplicita di Danish.
 - Hook `PreToolUse` che blocca l'accesso di Claude Code ai segreti, registrato in `.claude/settings.json`, con test.
