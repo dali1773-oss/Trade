@@ -4,7 +4,13 @@
 
 ## Stato attuale
 
-Fase 1 in corso: primi test sullo scheletro del progetto.
+Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 69 test passati, 0 falliti.
+
+### 2026-11-24 — Test unitari (regole anti‑truffa)
+Comando: `uv run pytest -q`
+Risultato: 69 passati, 0 falliti (nuovi: `tests/test_scam.py`).
+Note: ogni segnale d'allarme da solo porta a FAIL; un dato mancante porta a UNKNOWN (blocco).
+Decisione: regole pronte; mancano i dati reali on‑chain (Helius, Jupiter).
 
 ## Cosa verrà registrato qui
 

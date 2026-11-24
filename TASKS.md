@@ -52,9 +52,9 @@
 - [ ] 7 giorni di registrazione stabile
 
 ### Fase 3 — Scam Detection
-- [ ] Controlli mint/freeze/Token‑2022
-- [ ] Simulazione vendita via Jupiter
-- [ ] Concentrazione holder
+- [x] Regole deterministiche con veto (`src/trade/scam.py`): liquidità, età pool, mint/freeze, Token‑2022, concentrazione, vendibilità, nomi imitati. Dato mancante = blocco
+- [ ] Client Helius per i dati on‑chain (mint/freeze/Token‑2022, holder) — serve chiave gratuita Helius in `.env`
+- [ ] Simulazione vendita via Jupiter — serve chiave gratuita Jupiter in `.env`
 - [ ] Integrazione RugCheck e GoPlus
 - [ ] Etichettatura 24 h / 7 giorni e report falsi negativi
 

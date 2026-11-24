@@ -4,6 +4,7 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 
 ## [Non rilasciato]
 ### Aggiunto
+- Fase 3, regole anti‑truffa (`src/trade/scam.py`): verdetto PASS/FAIL/UNKNOWN, si compra solo con PASS; soglie da RISK_MANAGEMENT §4; controllo dei nomi imitati (es. CHIRSTMAS vs CHRISTMAS). Test in `tests/test_scam.py`.
 - Fase 2, registratore dati in sola lettura: `src/trade/sources/` (DexScreener, GeckoTerminal), `store.py` (SQLite), `recorder.py` e comando `trade-record`. Dipendenze: httpx, pydantic.
 - Test con risposte reali delle API registrate il 24/11/2026 (`tests/fixtures/`).
 - Scheletro del progetto Python (`pyproject.toml`, `uv.lock`, `src/trade/`, `tests/`).
