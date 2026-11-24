@@ -31,7 +31,8 @@
 - [x] Scheletro progetto (`pyproject.toml`, `src/trade/`, `tests/`) — 33 test passano nel cloud
 - [x] Verifica sul Mac: `uv run pytest` passa (33/33, 24/11/2026)
 - [x] Hook `PreToolUse` di sicurezza (`.claude/hooks/protect_secrets.py`) con test
-- [ ] Verifica sul Mac: Claude non riesce a leggere un `.env` di prova
+- [ ] Verifica sul Mac: Claude non riesce a leggere un `.env` di prova (primo tentativo 24/11 annullato: sessione aperta in `tradd` invece che in `tradd/Trade`)
+- [ ] Regole di divieto anche in `~/.claude/settings.json` sul Mac (valgono in ogni cartella)
 - [ ] `gitleaks` e `pip-audit` in CI (GitHub Actions)
 - [x] Subagent di sviluppo in `.claude/agents/` (security-reviewer, backtest-analyst, docs-keeper)
 

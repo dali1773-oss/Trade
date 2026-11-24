@@ -32,6 +32,8 @@
 - Quando inizierà il codice: hook `PreToolUse` che blocca letture/scritture su percorsi sensibili anche se un permesso venisse allargato per errore; sandbox di Claude Code attivabile con `/sandbox` (su macOS usa Seatbelt).
 - Gli MCP server usati in sviluppo sono **solo lettura** (Helius con `--read-only`, CoinGecko) e non ricevono mai chiavi di wallet.
 
+**Attenzione (verificato il 24/11/2026):** queste protezioni valgono solo quando Claude Code lavora con la cartella `Trade` come cartella di progetto. Se viene aperto nella cartella superiore (`tradd`), `.claude/settings.json` non viene caricato. Rimedio previsto: copiare le regole di divieto anche nelle impostazioni utente (`~/.claude/settings.json`) con percorsi `~/`, così valgono in qualsiasi cartella.
+
 ## 4. Revisione del codice prima dell'installazione
 
 Per ogni repository, libreria, skill o MCP server:
