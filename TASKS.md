@@ -58,9 +58,9 @@
 - [x] Client Helius (sola lettura): mint/freeze, Token‑2022 (tassa, hook, delegato permanente), concentrazione top 10 escluso il pool
 - [x] Prova di rivendibilità via quotazioni Jupiter (giro compra→rivendi, nessuno swap)
 - [x] Comando `uv run trade-scan <token>`: verdetto anti‑truffa completo
-- [ ] Verifica con risposte reali di Helius/Jupiter sul Mac
+- [x] Verifica con risposte reali di Helius/Jupiter sul Mac (BONK e un token pump.fun)
 - [ ] Quota del creatore (oggi sconosciuta → blocca sempre): RugCheck o metadati pump.fun
-- [ ] Escludere dal top 10 anche i conti dei pool Raydium/Meteora (oggi solo il pool che possiede direttamente il conto)
+- [ ] Escludere dal top 10 anche i conti di pool Raydium/Meteora ed exchange (su BONK top 10 = 40,55%, probabile falso allarme)
 - [ ] Integrazione RugCheck e GoPlus
 - [ ] Etichettatura 24 h / 7 giorni e report falsi negativi
 

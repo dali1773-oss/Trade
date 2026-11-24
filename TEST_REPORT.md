@@ -6,6 +6,13 @@
 
 Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 95 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
 
+### 2026-11-24 — Prova reale di trade-scan sul Mac (commit 9322ac3)
+Comando: `uv run trade-scan <token>`; sola lettura, nessuna chiave nell'output.
+Risultato:
+- BONK (DezXAZ8z…B263): FAIL. Autorità, Token‑2022, liquidità, età e vendibilità ok; top 10 = 40,55% (probabilmente exchange e pool non esclusi: possibile falso allarme); quota creatore sconosciuta.
+- Token pump.fun di 2 minuti (2DU8Lu…pump): FAIL. Pool troppo giovane, liquidità sconosciuta (curva pump.fun), Jupiter senza rotta (NO_ROUTES_FOUND) → vendibilità sconosciuta.
+Decisione: i formati reali di Helius e Jupiter corrispondono al codice. Prossimi passi: quota del creatore ed esclusione dei conti di pool/exchange dal top 10.
+
 ### 2026-11-24 — Test unitari (Helius, Jupiter, trade-scan)
 Comando: `uv run pytest -q`
 Risultato: 95 passati, 0 falliti (nuovi: `tests/test_security.py`).
