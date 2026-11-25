@@ -94,3 +94,26 @@ async def test_label_and_matrix(tmp_path, capsys):
     # Seconda esecuzione: niente da rifare.
     assert await label_main(args, transport=httpx.MockTransport(handler)) == 0
     assert "Etichettati ora: 0" in capsys.readouterr().out
+
+
+def test_refresh_priority_scanned_then_young_then_oldest():
+    store = Store(":memory:")
+    now = NOW
+    store.ensure_token("solana", "OLD_STALE", "t", now - timedelta(days=2))
+    store.ensure_token("solana", "OLD_NEVER", "t", now - timedelta(days=1))
+    store.ensure_token("solana", "YOUNG", "t", now - timedelta(hours=1))
+    store.ensure_token("solana", "YOUNG_FRESH", "t", now - timedelta(hours=1))
+    store.ensure_token("solana", "SCANNED", "t", now - timedelta(days=3))
+    store.ensure_token("solana", "ANCIENT", "t", now - timedelta(days=30))
+    store.mark_snapshot("solana", "OLD_STALE", now - timedelta(hours=3))
+    store.mark_snapshot("solana", "YOUNG", now - timedelta(minutes=30))
+    store.mark_snapshot("solana", "YOUNG_FRESH", now - timedelta(minutes=2))
+    store.mark_snapshot("solana", "SCANNED", now - timedelta(hours=1))
+    store.add_scam_check("solana", "SCANNED", verdict="FAIL", reasons=[], info={}, notes=[])
+    order = store.tokens_to_refresh("solana", 10, now=now)
+    assert order[:2] == ["SCANNED", "YOUNG"]
+    assert "ANCIENT" not in order  # oltre 7 giorni
+    assert order.index("OLD_NEVER") < order.index("OLD_STALE") < order.index("YOUNG_FRESH")
+    # Appena fotografato, il token controllato torna in coda.
+    store.mark_snapshot("solana", "SCANNED", now)
+    assert store.tokens_to_refresh("solana", 1, now=now) == ["YOUNG"]

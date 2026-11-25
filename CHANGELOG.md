@@ -22,6 +22,7 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 - Registro installazioni sul Mac: uv 0.13.9, Python 3.12.16, repository clonato, test 33/33, protezioni dei segreti verificate dal vivo.
 - `user-settings/`: regole da copiare in `~/.claude/settings.json` perché le protezioni valgano in ogni cartella.
 ### Cambiato
+- Registratore: priorità degli aggiornamenti. Prima i token con un verdetto anti‑truffa (ogni 15 min), poi quelli nati da meno di 6 ore (ogni 10 min), poi gli altri. Attivo dal prossimo riavvio del registratore.
 - RISK_MANAGEMENT: limiti principali approvati da Danish il 25/11/2026.
 
 ### Corretto

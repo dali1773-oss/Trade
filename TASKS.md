@@ -68,6 +68,8 @@
 - [x] Etichettatura: `uv run trade-label` (24 h) e `--horizon 168` (7 giorni), tabella verdetto × esito e falsi negativi
 - [ ] Prima etichettatura reale (25/11/2026 sera) e decisione sulle soglie
 
+- [x] Registratore: priorità di aggiornamento (token controllati e giovani prima) — attiva dal prossimo riavvio
+
 ### Fase 4 — Strategia e backtest
 - [x] Secondo percorso, grandi cripto su Bitvavo senza leva: `trade-backtest` (storico pubblico Bitvavo, commissioni 0,25% + slippage 0,1%, minimo 5 €) — primo test 25/11: il filtro "media 200 giorni" non batte il compra e tieni su BTC ma circa dimezza le cadute peggiori; da verificare su più finestre e poi in shadow
 - [x] Simulazione ombra `trade-shadow` (soldi finti, regole congelate al primo avvio in `data/shadow.json`: compra e tieni, media 50 g, media 200 g su BTC/ETH/SOL; i conti ripartono sempre dal giorno congelato, quindi salti di giorni non contano) — avviata 25/11/2026; prima valutazione dopo 4 settimane

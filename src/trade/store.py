@@ -173,14 +173,49 @@ class Store:
         )
 
     def tokens_to_refresh(
-        self, chain: str, limit: int, *, max_age: timedelta = timedelta(days=7)
+        self,
+        chain: str,
+        limit: int,
+        *,
+        max_age: timedelta = timedelta(days=7),
+        young: timedelta = timedelta(hours=6),
+        young_every: timedelta = timedelta(minutes=10),
+        scanned_every: timedelta = timedelta(minutes=15),
+        now: datetime | None = None,
     ) -> list[str]:
-        """Token visti negli ultimi `max_age`, prima quelli fotografati da più tempo."""
-        cutoff = _iso(datetime.now(UTC) - max_age)
+        """Token da aggiornare, in ordine di priorità.
+
+        1. token con un verdetto anti-truffa, se l'ultima foto ha più di `scanned_every`
+           (servono serie di prezzi fitte per capire se il verdetto era giusto);
+        2. token nati da meno di `young`, se l'ultima foto ha più di `young_every`
+           (è quando succede quasi tutto: lancio, pump, rug);
+        3. tutti gli altri visti negli ultimi `max_age`, prima i fotografati da più tempo.
+        """
+        now = now or datetime.now(UTC)
         rows = self.conn.execute(
-            "SELECT token_address FROM tokens WHERE chain = ? AND first_seen >= ? "
-            "ORDER BY COALESCE(last_snapshot_at, '') ASC, first_seen ASC LIMIT ?",
-            (chain, cutoff, limit),
+            """
+            SELECT t.token_address,
+                   CASE
+                     WHEN EXISTS (SELECT 1 FROM scam_checks c
+                                  WHERE c.chain = t.chain AND c.token_address = t.token_address)
+                          AND COALESCE(t.last_snapshot_at, '') < :scanned_cut THEN 0
+                     WHEN t.first_seen >= :young_cut
+                          AND COALESCE(t.last_snapshot_at, '') < :young_every_cut THEN 1
+                     ELSE 2
+                   END AS prio
+            FROM tokens t
+            WHERE t.chain = :chain AND t.first_seen >= :cutoff
+            ORDER BY prio ASC, COALESCE(t.last_snapshot_at, '') ASC, t.first_seen ASC
+            LIMIT :limit
+            """,
+            {
+                "chain": chain,
+                "cutoff": _iso(now - max_age),
+                "young_cut": _iso(now - young),
+                "young_every_cut": _iso(now - young_every),
+                "scanned_cut": _iso(now - scanned_every),
+                "limit": limit,
+            },
         ).fetchall()
         return [row["token_address"] for row in rows]
 
