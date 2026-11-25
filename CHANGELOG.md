@@ -4,6 +4,8 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 
 ## [Non rilasciato]
 ### Aggiunto
+- `trade-shadow`: simulazione ombra delle grandi cripto (soldi finti, nessuna chiave, nessun ordine). Usa solo giorni chiusi; parametri congelati al primo avvio.
+- `trade-backtest`: prova fuori campione e prova con costi all'1%.
 - `trade-backtest` e `sources/bitvavo.py`: storico giornaliero pubblico di Bitvavo (senza chiave, sola lettura) e confronto tra compra e tieni, tendenza (media 50/100/200 giorni) e ribilanciamento 50/50, con commissioni, slippage e ordine minimo di 5 €. Decisione alla chiusura, esecuzione all'apertura del giorno dopo.
 - Fase 4: `costs.py`, modello dei costi del giro completo (RISK_MANAGEMENT §2).
 - `trade-record --scan`: verdetto anti‑truffa automatico sui token nuovi (max 3 per ciclo), salvato in `scam_checks`. `trade-label`: etichetta VIVO/MORTO dopo 24 h o 7 giorni e conta i falsi negativi.

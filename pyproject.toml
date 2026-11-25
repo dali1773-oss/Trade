@@ -15,6 +15,7 @@ trade-check-keys = "trade.check_keys:main"
 trade-scan = "trade.security:main"
 trade-label = "trade.label:main"
 trade-backtest = "trade.backtest:main"
+trade-shadow = "trade.shadow:main"
 
 [dependency-groups]
 dev = ["pytest>=8", "pytest-asyncio>=0.24"]
