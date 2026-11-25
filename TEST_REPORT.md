@@ -135,3 +135,13 @@ Lettura: le medie mobili riducono quasi sempre il calo massimo; un guadagno supe
 | BTC+ETH (dal 08/03/2019) | +613,5% (−75,3%) | +1418,7% (−52,3%) | +622,0% (−54,0%) | +608% / +406% / +401% |
 | Ultimi 365 giorni, BTC+ETH+SOL | −39,7% | +7,8% | −0,6% | — |
 Lettura: nell'ultimo anno il mercato è sceso molto (BTC −29%, ETH −41%, SOL −48%) e le regole di tendenza hanno protetto il capitale. Sul lungo periodo e con costi alti il vantaggio della media 50 g si riduce o sparisce. La media 50 g è stata scelta guardando gli stessi dati: va confermata dalla simulazione ombra.
+
+## Prima etichettatura a 24 ore dei verdetti anti‑truffa (26/11/2026, `trade-label` sul Mac)
+Etichettati 197 token (3 errori di rete).
+| Verdetto | VIVO dopo 24 h | MORTO dopo 24 h |
+|---|---|---|
+| PASS | 0 | 0 |
+| FAIL | 11 | 97 (90%) |
+| UNKNOWN | 21 | 68 (76%) |
+Falsi negativi (PASS ma MORTO): 0, ma solo perché nessun token ha avuto PASS. In totale l'84% dei token nuovi è morto entro un giorno.
+Lettura: il filtro boccia giustamente quasi tutti i token cattivi; non sappiamo ancora se riconosce quelli buoni. Le 32 eccezioni (FAIL/UNKNOWN ma VIVO) vanno studiate per capire quali regole bloccano token sani. Nessuna soglia cambiata.
