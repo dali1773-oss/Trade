@@ -4,6 +4,7 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 
 ## [Non rilasciato]
 ### Aggiunto
+- `trade-backtest`: mix a quote uguali di tutte le monete (e senza SOL, che ha storia più corta), solo sui giorni comuni.
 - `trade-shadow`: simulazione ombra delle grandi cripto (soldi finti, nessuna chiave, nessun ordine). Usa solo giorni chiusi; parametri congelati al primo avvio.
 - `trade-backtest`: prova fuori campione e prova con costi all'1%.
 - `trade-backtest` e `sources/bitvavo.py`: storico giornaliero pubblico di Bitvavo (senza chiave, sola lettura) e confronto tra compra e tieni, tendenza (media 50/100/200 giorni) e ribilanciamento 50/50, con commissioni, slippage e ordine minimo di 5 €. Decisione alla chiusura, esecuzione all'apertura del giorno dopo.

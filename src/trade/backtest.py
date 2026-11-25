@@ -20,7 +20,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import timedelta
 from pathlib import Path
 
@@ -77,6 +77,7 @@ class Result:
     costs_eur: float
     days: int
     time_in_market_pct: float
+    equity: list[float] = field(default_factory=list, repr=False)  # valore a fine di ogni giorno
 
     @property
     def return_pct(self) -> float:
@@ -108,6 +109,7 @@ def simulate(
     cash, units = capital, 0.0
     trades, costs, in_market_days = 0, 0.0, 0
     peak, max_dd = capital, 0.0
+    curve: list[float] = []
     cost_rate = fee + slippage
     for i in range(start, len(candles) - 1):
         target = min(max(strategy.target(closes[: i + 1]), 0.0), 1.0)
@@ -132,6 +134,7 @@ def simulate(
         if units > 0:
             in_market_days += 1
         equity = cash + units * candles[i + 1].close
+        curve.append(equity)
         peak = max(peak, equity)
         max_dd = max(max_dd, (peak - equity) / peak)
     days = (candles[-1].day - candles[start].day).days
@@ -144,6 +147,7 @@ def simulate(
         costs_eur=costs,
         days=days,
         time_in_market_pct=in_market_days * 100 / max(len(candles) - 1 - start, 1),
+        equity=curve,
     )
 
 
@@ -179,6 +183,41 @@ def format_table(title: str, results: Sequence[Result]) -> str:
                else f"meglio del compra e tieni: {best.strategy}")
     lines.append(f"  → {verdict} (giorni: {first.days})")
     return "\n".join(lines)
+
+
+def align(histories: dict[str, Sequence[Candle]]) -> dict[str, list[Candle]]:
+    """Tiene solo i giorni presenti in tutte le monete (il mix parte quando c'è l'ultima arrivata)."""
+    common = set.intersection(*(set(c.day for c in h) for h in histories.values()))
+    return {m: [c for c in h if c.day in common] for m, h in histories.items()}
+
+
+def max_drawdown_pct(curve: Sequence[float], start: float) -> float:
+    peak, dd = start, 0.0
+    for v in curve:
+        peak = max(peak, v)
+        dd = max(dd, (peak - v) / peak)
+    return dd * 100
+
+
+def portfolio_results(histories: dict[str, Sequence[Candle]], strategies: Sequence[Strategy], *,
+                      capital: float = 100.0, fee: float = TAKER_FEE,
+                      from_index: int | None = None) -> list[Result]:
+    """Mix a quote uguali: ogni moneta riceve capital/n all'inizio e segue la stessa regola."""
+    aligned = align(histories)
+    n = len(aligned)
+    per_market = {m: run_all(c, strategies, capital=capital / n, fee=fee, from_index=from_index)
+                  for m, c in aligned.items()}
+    out = []
+    for k, s in enumerate(strategies):
+        parts = [per_market[m][k] for m in aligned]
+        curve = [sum(vals) for vals in zip(*(p.equity for p in parts))]
+        out.append(Result(
+            strategy=s.name, start_value=capital, final_value=sum(p.final_value for p in parts),
+            max_drawdown_pct=max_drawdown_pct(curve, capital), trades=sum(p.trades for p in parts),
+            costs_eur=sum(p.costs_eur for p in parts), days=parts[0].days,
+            time_in_market_pct=sum(p.time_in_market_pct for p in parts) / n, equity=curve,
+        ))
+    return out
 
 
 STRESS_FEE = 0.01  # 1% per operazione: costi molto peggiori del previsto
@@ -244,6 +283,8 @@ async def _main_async(args: argparse.Namespace) -> int:
     print(f"Capitale simulato {args.capital:.0f} €, commissione {args.fee}% + slippage {SLIPPAGE * 100}%, "
           f"niente leva, tasse escluse.\n")
     status = 0
+    loaded: dict[str, list[Candle]] = {}
+    strategies = default_strategies()
     for market in args.markets:
         try:
             candles = await load_history(market, args.data_dir, args.refresh)
@@ -251,7 +292,7 @@ async def _main_async(args: argparse.Namespace) -> int:
             print(f"{market}: dati non disponibili ({exc})\n")
             status = 1
             continue
-        strategies = default_strategies()
+        loaded[market] = candles
         print(f"=== {market}: {len(candles)} giorni, dal {candles[0].day.date()} al {candles[-1].day.date()} ===")
         print(format_table("Tutto il periodo", run_all(candles, strategies, capital=args.capital,
                                                        fee=args.fee / 100)))
@@ -261,7 +302,37 @@ async def _main_async(args: argparse.Namespace) -> int:
         print(format_out_of_sample(out_of_sample(candles, strategies, capital=args.capital, fee=args.fee / 100)))
         print(format_stress(candles, strategies, capital=args.capital, fee=STRESS_FEE))
         print()
+    for mix in mixes(list(loaded)):
+        print_mix(mix, {m: loaded[m] for m in mix}, strategies, args)
     return status
+
+
+def mixes(markets: list[str]) -> list[list[str]]:
+    """Il mix di tutte le monete e, se c'è SOL (storia più corta), anche quello senza SOL."""
+    out = [markets] if len(markets) >= 2 else []
+    without_sol = [m for m in markets if not m.startswith("SOL-")]
+    if len(without_sol) >= 2 and without_sol != markets:
+        out.append(without_sol)
+    return out
+
+
+def print_mix(mix: list[str], histories: dict[str, list[Candle]], strategies: Sequence[Strategy],
+              args: argparse.Namespace) -> None:
+    aligned = align(histories)
+    days = next(iter(aligned.values()))
+    if len(days) < max(s.lookback for s in strategies) + 2:
+        print(f"=== Mix {' + '.join(mix)}: storia comune troppo corta ===\n")
+        return
+    fee = args.fee / 100
+    print(f"=== Mix a quote uguali {' + '.join(mix)}: dal {days[0].day.date()} al {days[-1].day.date()} ===")
+    print(format_table("Tutto il periodo", portfolio_results(aligned, strategies, capital=args.capital, fee=fee)))
+    recent = index_days_ago(days, 365)
+    print(format_table("Ultimi 365 giorni", portfolio_results(aligned, strategies, capital=args.capital,
+                                                              fee=fee, from_index=recent)))
+    stress = portfolio_results(aligned, strategies, capital=args.capital, fee=STRESS_FEE)
+    print(f"Con costi all'{STRESS_FEE * 100:.0f}% per operazione: "
+          + ", ".join(f"{r.strategy} {r.return_pct:+.0f}%" for r in stress))
+    print()
 
 
 def build_parser() -> argparse.ArgumentParser:

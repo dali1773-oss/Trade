@@ -89,6 +89,22 @@ def test_out_of_sample_and_stress():
     assert "1%" in format_stress(candles, strategies, capital=100, fee=0.01)
 
 
+def test_portfolio_sums_sleeves_on_common_days():
+    from trade.backtest import align, mixes, portfolio_results
+
+    a = series([100, 100, 200, 200])
+    b = series([50, 50, 50, 25, 25])[1:]  # parte un giorno dopo
+    aligned = align({"A": a, "B": b})
+    assert len(aligned["A"]) == len(aligned["B"]) == 3
+    [r] = portfolio_results({"A": a, "B": b}, [buy_and_hold()], capital=100, fee=0)
+    # 50 € su A che raddoppia + 50 € su B che si dimezza = 100 + 25, meno lo 0,1% di slippage
+    assert r.final_value == pytest.approx(125 * 0.999)
+    assert r.max_drawdown_pct == pytest.approx(16.666, abs=0.01)  # da 150 a 125
+    assert r.trades == 2
+    assert mixes(["BTC-EUR", "ETH-EUR", "SOL-EUR"]) == [["BTC-EUR", "ETH-EUR", "SOL-EUR"], ["BTC-EUR", "ETH-EUR"]]
+    assert mixes(["BTC-EUR"]) == []
+
+
 def test_parse_candles_sorts_and_drops_bad_rows():
     payload = [
         [2 * DAY_MS, "2", "3", "1", "2.5", "10"],

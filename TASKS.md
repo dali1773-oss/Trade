@@ -71,7 +71,7 @@
 ### Fase 4 — Strategia e backtest
 - [x] Secondo percorso, grandi cripto su Bitvavo senza leva: `trade-backtest` (storico pubblico Bitvavo, commissioni 0,25% + slippage 0,1%, minimo 5 €) — primo test 25/11: il filtro "media 200 giorni" non batte il compra e tieni su BTC ma circa dimezza le cadute peggiori; da verificare su più finestre e poi in shadow
 - [x] Simulazione ombra `trade-shadow` (soldi finti, regole congelate al primo avvio in `data/shadow.json`: compra e tieni, media 50 g, media 200 g su BTC/ETH/SOL; i conti ripartono sempre dal giorno congelato, quindi salti di giorni non contano) — avviata 25/11/2026; prima valutazione dopo 4 settimane
-- [ ] Backtest su mix di monete (BTC+ETH, BTC+ETH+SOL) e su più finestre temporali
+- [x] Backtest su mix di monete a quote uguali (BTC+ETH, BTC+ETH+SOL) in `trade-backtest` — da eseguire sul Mac con i dati veri
 - [x] Modello costi del giro completo (`src/trade/costs.py`): perdita quotata da Jupiter + rete + rent + margine slippage, regola 2× e tasse 33%
 - [ ] Stima della priority fee con l'API di Helius al posto del valore fisso
 - [ ] Strategy Engine v1
