@@ -4,7 +4,7 @@
 
 ## Stato attuale
 
-Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 106 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
+Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato (25/11/2026): 114 test passati, 0 falliti (nuovi: `tests/test_backtest.py`, controlla anche che il backtest non usi prezzi futuri). Precedente: 106 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
 
 ### 2026-11-25 — Registratore con verdetti automatici (commit 25a367b), prime 16,5 ore
 - 3.749 token, 8.824 snapshot, 564 verdetti: FAIL 333, UNKNOWN 231, PASS 0.
@@ -108,3 +108,14 @@ Versione/commit: ed3bead · Comandi: `uv sync`, `uv run pytest -q` (52 passati),
 Risultato: 1 ciclo in ~30 s, **44 token nuovi, 42 snapshot, 0 errori**; 23 richieste GET, tutte HTTP 200, intervallo ~1,5 s su DexScreener. Database 128 KB.
 Osservazioni: i pool ancora sulla curva di pump.fun hanno spesso `liquidity_usd` mancante (da trattare come sconosciuto nei filtri); già visibili nomi imitati (es. "CHIRSTMAS" accanto a "CHRISTMAS"), utile per lo Scam Detection.
 Decisione: avviare la registrazione continua per 7 giorni.
+
+
+## Backtest grandi cripto su Bitvavo — primo test esplorativo (25/11/2026)
+Eseguito sul Mac con lo storico pubblico di Bitvavo (BTC ed ETH dal 2019, SOL dal 2021). Costi 0,30% per operazione. Decisione alla chiusura, esecuzione il giorno dopo.
+| Mercato | Compra e tieni | Filtro media 200 g |
+|---|---|---|
+| Solo BTC (2019→2026) | +585%, calo max −74% | +309%, calo max −62% |
+| Solo SOL (2021→2026) | −23%, calo max −93% | +134%, calo max −59% |
+| Mix BTC+ETH (2019→2026) | +912%, calo max −73% | +781%, calo max −50% |
+| Mix BTC+ETH+SOL (2022→2026) | +22%, calo max −76% | +132%, calo max −35% |
+Il momentum a 90 giorni è risultato il peggiore quasi ovunque. Lettura: il filtro riduce le cadute ma non garantisce più guadagno. I dati coprono pochi cicli, quindi c'è rischio di overfitting. Prossimo controllo: `uv run trade-backtest` dal repository, che deve dare numeri coerenti.

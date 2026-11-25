@@ -4,6 +4,7 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 
 ## [Non rilasciato]
 ### Aggiunto
+- `trade-backtest` e `sources/bitvavo.py`: storico giornaliero pubblico di Bitvavo (senza chiave, sola lettura) e confronto tra compra e tieni, tendenza (media 50/100/200 giorni) e ribilanciamento 50/50, con commissioni, slippage e ordine minimo di 5 €. Decisione alla chiusura, esecuzione all'apertura del giorno dopo.
 - Fase 4: `costs.py`, modello dei costi del giro completo (RISK_MANAGEMENT §2).
 - `trade-record --scan`: verdetto anti‑truffa automatico sui token nuovi (max 3 per ciclo), salvato in `scam_checks`. `trade-label`: etichetta VIVO/MORTO dopo 24 h o 7 giorni e conta i falsi negativi.
 - Fase 3: `sources/helius.py` (solo metodi RPC di lettura, gli altri vengono rifiutati), `sources/jupiter.py` (solo quotazioni), `security.py` e comando `trade-scan`. Dato mancante = blocco. Quota del creatore dal primo firmatario del mint; esclusi dal top 10 i conti di pool e curve di lancio.
