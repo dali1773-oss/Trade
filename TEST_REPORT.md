@@ -119,3 +119,11 @@ Eseguito sul Mac con lo storico pubblico di Bitvavo (BTC ed ETH dal 2019, SOL da
 | Mix BTC+ETH (2019→2026) | +912%, calo max −73% | +781%, calo max −50% |
 | Mix BTC+ETH+SOL (2022→2026) | +22%, calo max −76% | +132%, calo max −35% |
 Il momentum a 90 giorni è risultato il peggiore quasi ovunque. Lettura: il filtro riduce le cadute ma non garantisce più guadagno. I dati coprono pochi cicli, quindi c'è rischio di overfitting. Prossimo controllo: `uv run trade-backtest` dal repository, che deve dare numeri coerenti.
+
+### Prova fuori campione e costi all'1% (25/11/2026, `trade-backtest` sul Mac)
+| Moneta | Scelta sulla 1ª metà | 2ª metà: scelta vs compra e tieni | Costi 1%: compra e tieni / media 50 g / media 200 g |
+|---|---|---|---|
+| BTC (dal 16/01/2023) | media 50 g | +188,8% (calo −31,9%) vs +172,3% (−51,7%) | +499% / +378% / +96% |
+| ETH (dal 16/01/2023) | compra e tieni | +2,6%, uguale | +711% / +435% / +706% |
+| SOL (dal 31/03/2024) | media 50 g | −35,8% (−54,6%) vs −67,2% (−78,7%) | −23% / +152% / +76% |
+Lettura: le medie mobili riducono quasi sempre il calo massimo; un guadagno superiore affidabile non c'è. Il vantaggio della media 50 g su BTC sparisce con costi all'1%. Nessuna strategia è pronta per soldi veri; prossimo passo: shadow giornaliero.

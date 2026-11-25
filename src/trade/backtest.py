@@ -206,13 +206,18 @@ def out_of_sample(candles: Sequence[Candle], strategies: Sequence[Strategy], *, 
 
 
 def format_out_of_sample(o: OutOfSample) -> str:
-    ok = o.chosen_after.final_value > o.buy_hold_after.final_value
+    if o.chosen == buy_and_hold().name:
+        verdict = "sulla prima metà vinceva già il compra e tieni: nessuna regola da usare"
+    elif o.chosen_after.final_value > o.buy_hold_after.final_value:
+        verdict = "regge anche sui dati mai visti" + (" (ma perde comunque soldi)" if o.chosen_after.return_pct < 0 else "")
+    else:
+        verdict = "NON regge sui dati mai visti"
     return (
         f"Prova fuori campione (scelta prima del {o.split_day}, verifica dopo)\n"
         f"  scelta: {o.chosen} (prima metà {o.chosen_in_sample_pct:+.1f}%)\n"
         f"  seconda metà: {o.chosen_after.return_pct:+.1f}% (calo max {-o.chosen_after.max_drawdown_pct:.1f}%)"
         f" contro compra e tieni {o.buy_hold_after.return_pct:+.1f}% (calo max {-o.buy_hold_after.max_drawdown_pct:.1f}%)\n"
-        f"  → {'regge anche sui dati mai visti' if ok else 'NON regge sui dati mai visti'}"
+        f"  → {verdict}"
     )
 
 

@@ -84,6 +84,8 @@ def test_out_of_sample_and_stress():
     o = out_of_sample(candles, strategies, capital=100, fee=0)
     assert o.chosen == "Tendenza (media 5 g)"
     assert "NON regge" in format_out_of_sample(o)
+    same = out_of_sample(series([100 + i for i in range(40)]), strategies, capital=100, fee=0)
+    assert "vinceva già il compra e tieni" in format_out_of_sample(same)
     assert "1%" in format_stress(candles, strategies, capital=100, fee=0.01)
 
 
