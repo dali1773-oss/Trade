@@ -74,6 +74,19 @@ def test_run_all_uses_same_start_and_table():
         simulate(candles, trend(20), start=5)
 
 
+def test_out_of_sample_and_stress():
+    from trade.backtest import format_out_of_sample, format_stress, out_of_sample
+
+    # Prima metà: sale e crolla (vince la tendenza); seconda metà: sale sempre (vince compra e tieni).
+    closes = [100 + i for i in range(30)] + [129 - 4 * i for i in range(1, 20)] + [53 + i for i in range(50)]
+    candles = series(closes)
+    strategies = [buy_and_hold(), trend(5)]
+    o = out_of_sample(candles, strategies, capital=100, fee=0)
+    assert o.chosen == "Tendenza (media 5 g)"
+    assert "NON regge" in format_out_of_sample(o)
+    assert "1%" in format_stress(candles, strategies, capital=100, fee=0.01)
+
+
 def test_parse_candles_sorts_and_drops_bad_rows():
     payload = [
         [2 * DAY_MS, "2", "3", "1", "2.5", "10"],

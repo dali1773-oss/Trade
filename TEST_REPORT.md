@@ -4,7 +4,7 @@
 
 ## Stato attuale
 
-Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato (25/11/2026): 114 test passati, 0 falliti (nuovi: `tests/test_backtest.py`, controlla anche che il backtest non usi prezzi futuri). Precedente: 106 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
+Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato (25/11/2026): 115 test passati, 0 falliti (nuovi: `tests/test_backtest.py`, compresa la prova fuori campione, controlla anche che il backtest non usi prezzi futuri). Precedente: 106 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
 
 ### 2026-11-25 — Registratore con verdetti automatici (commit 25a367b), prime 16,5 ore
 - 3.749 token, 8.824 snapshot, 564 verdetti: FAIL 333, UNKNOWN 231, PASS 0.

@@ -181,6 +181,48 @@ def format_table(title: str, results: Sequence[Result]) -> str:
     return "\n".join(lines)
 
 
+STRESS_FEE = 0.01  # 1% per operazione: costi molto peggiori del previsto
+
+
+@dataclass
+class OutOfSample:
+    split_day: str
+    chosen: str
+    chosen_in_sample_pct: float
+    chosen_after: Result
+    buy_hold_after: Result
+
+
+def out_of_sample(candles: Sequence[Candle], strategies: Sequence[Strategy], *, capital: float = 100.0,
+                  fee: float = TAKER_FEE) -> OutOfSample:
+    """Sceglie la strategia migliore sulla prima metà e la giudica sulla seconda, mai vista."""
+    mid = len(candles) // 2
+    first = run_all(candles[: mid + 1], strategies, capital=capital, fee=fee)
+    best = max(range(len(strategies)), key=lambda k: first[k].final_value)
+    second = run_all(candles, strategies, capital=capital, fee=fee, from_index=mid)
+    bh = next(k for k, s in enumerate(strategies) if s.name == buy_and_hold().name)
+    return OutOfSample(str(candles[mid].day.date()), strategies[best].name, first[best].return_pct,
+                       second[best], second[bh])
+
+
+def format_out_of_sample(o: OutOfSample) -> str:
+    ok = o.chosen_after.final_value > o.buy_hold_after.final_value
+    return (
+        f"Prova fuori campione (scelta prima del {o.split_day}, verifica dopo)\n"
+        f"  scelta: {o.chosen} (prima metà {o.chosen_in_sample_pct:+.1f}%)\n"
+        f"  seconda metà: {o.chosen_after.return_pct:+.1f}% (calo max {-o.chosen_after.max_drawdown_pct:.1f}%)"
+        f" contro compra e tieni {o.buy_hold_after.return_pct:+.1f}% (calo max {-o.buy_hold_after.max_drawdown_pct:.1f}%)\n"
+        f"  → {'regge anche sui dati mai visti' if ok else 'NON regge sui dati mai visti'}"
+    )
+
+
+def format_stress(candles: Sequence[Candle], strategies: Sequence[Strategy], *, capital: float,
+                  fee: float) -> str:
+    rs = run_all(candles, strategies, capital=capital, fee=fee)
+    cells = ", ".join(f"{r.strategy} {r.return_pct:+.0f}%" for r in rs)
+    return f"Con costi all'{fee * 100:.0f}% per operazione: {cells}"
+
+
 async def load_history(market: str, data_dir: Path, refresh: bool) -> list[Candle]:
     path = data_dir / f"{market}_1d.csv"
     if path.exists() and not refresh:
@@ -211,6 +253,8 @@ async def _main_async(args: argparse.Namespace) -> int:
         recent = index_days_ago(candles, 365)
         print(format_table("Ultimi 365 giorni", run_all(candles, strategies, capital=args.capital,
                                                         fee=args.fee / 100, from_index=recent)))
+        print(format_out_of_sample(out_of_sample(candles, strategies, capital=args.capital, fee=args.fee / 100)))
+        print(format_stress(candles, strategies, capital=args.capital, fee=STRESS_FEE))
         print()
     return status
 
