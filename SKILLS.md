@@ -150,3 +150,17 @@ Documentazione ufficiale Claude Code sulle differenze: https://code.claude.com/d
 3. **Telethon** è archiviato.
 4. **Helius MCP** può muovere fondi se non in read‑only.
 5. I limiti gratuiti cambiano spesso: ricontrollarli prima di ogni fase (data di verifica in cima a questo file).
+
+## Exchange per comprare SOL con euro (verifica 25/11/2026)
+
+Fonte principale: MICA Watch (registro indipendente, dati all'11/11/2026, https://micawatch.com/article/mica-licensed-crypto-exchanges-list-2026) + pagine ufficiali. Da riconfermare sul registro ESMA prima dell'apertura del conto.
+
+| Exchange | Licenza MiCA | Tipo | Note | Giudizio |
+|---|---|---|---|---|
+| Bitvavo | Paesi Bassi (AFM), 26/06/2025, valida in tutta l'UE (https://www.bitvavo.com/it/news/bitvavo-obtains-mica-licence) | piattaforma di scambio | commissioni 0,00–0,25% per operazione (pagina ufficiale), sito e app in italiano; costo prelievo SOL da verificare nell'app | ✅ prima scelta |
+| Kraken | Irlanda, 25/06/2025 | piattaforma di scambio | tabella prelievi ufficiale (https://support.kraken.com/it/articles/360000767986) non leggibile in automatico: verificare SOL a mano | ✅ alternativa |
+| Coinbase | Lussemburgo, 20/06/2025 | solo broker | semplice ma di solito più caro (spread) | 🟡 |
+| Bitpanda | Austria, 09/04/2025 | solo broker | come sopra | 🟡 |
+| Young Platform | Italia, 30/06/2026 | solo broker | italiano | 🟡 |
+
+Regole: solo app/sito ufficiali, 2FA con app di autenticazione (non SMS), prelievi solo verso il wallet del bot quando sarà creato.
