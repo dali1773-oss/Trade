@@ -17,6 +17,9 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 - Subagent di sviluppo: security-reviewer, backtest-analyst, docs-keeper.
 - Registro installazioni sul Mac: uv 0.13.9, Python 3.12.16, repository clonato, test 33/33, protezioni dei segreti verificate dal vivo.
 - `user-settings/`: regole da copiare in `~/.claude/settings.json` perché le protezioni valgano in ogni cartella.
+### Cambiato
+- RISK_MANAGEMENT: limiti principali approvati da Danish il 25/11/2026.
+
 ### Corretto
 - Registratore: il log non scrive più una riga per ogni richiesta HTTP (risparmio di spazio su disco).
 - Registratore: Ctrl+C ora lo ferma subito, anche a metà ciclo (prima aspettava la fine del giro).

@@ -1,6 +1,6 @@
 # RISK_MANAGEMENT — Gestione del rischio
 
-> Stato: **regole proposte, da approvare da Danish**. Ultimo aggiornamento: 24/11/2026.
+> Stato: **limiti principali approvati da Danish il 25/11/2026** (wallet caldo max 100 €, 5 € per operazione, stop giornaliero a −10 €, spegnimento a −40 € dal capitale del pilota, nessuna leva). Gli altri valori di §4–5 restano iniziali e vanno calibrati con backtest e shadow; ogni modifica richiede nuova approvazione. Ultimo aggiornamento: 25/11/2026.
 > Questi limiti sono implementati nel Risk Manager **e** ricontrollati dal Signer. Nessun agente di analisi può modificarli.
 
 ## 1. Verità scomode (da leggere prima di tutto)

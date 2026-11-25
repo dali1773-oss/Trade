@@ -22,7 +22,8 @@
 - [ ] Liberare spazio su disco prima della Fase 2 (23 GB liberi) — **Danish**
 
 - [ ] Revisione e approvazione della PR dei documenti — **Danish**
-- [ ] Approvazione dei limiti di rischio proposti (RISK_MANAGEMENT §4–5) — **Danish**
+- [x] Approvazione dei limiti principali di rischio — **Danish**, 25/11/2026 (scheda nel thread)
+- [x] Conto Bitvavo aperto (deposito di prova 5 €) — **Danish**, 25/11/2026
 - [x] Fase 1, passo 1: verifica del Mac (24/11/2026, vedi INSTALLATION.md)
 
 ## ⏳ Da fare
