@@ -6,6 +6,14 @@
 
 Fasi 1–2 completate, Fase 3 in corso. Ultimo risultato: 102 test passati, 0 falliti (nuovi: `tests/test_check_keys.py`, verifica anche che la chiave non compaia mai nell'output).
 
+### 2026-11-25 — Registratore con verdetti automatici (commit 25a367b), prime 16,5 ore
+- 3.749 token, 8.824 snapshot, 564 verdetti: FAIL 333, UNKNOWN 231, PASS 0.
+- Motivi più frequenti: liquidità (546), vendibilità (315), concentrazione top 10 (271), quota creatore (147).
+- 189 cicli, 48 errori temporanei delle fonti (DexScreener 44, GeckoTerminal 4), mai bloccanti.
+- Il Mac ha dormito da 00:05 a 11:55 (20 buchi da 11 a 70 minuti): serve impedire lo stop con l'alimentatore collegato.
+- Database 6,7 MB + 4,2 MB WAL; disco 21 GB liberi.
+Nota: nessun PASS perché i token appena nati non hanno ancora liquidità ≥ 20.000 $ né un pool stabile; da valutare nella Fase 4 (strategia), senza abbassare le soglie senza approvazione.
+
 ### 2026-11-24 — Terza prova (commit 022d830) e registratore
 - Autorità Meteora DBC confermata: su Optimus FhVo3m… ora risulta "escluso (liquidità)".
 - ATX: proprietario del 100% = ALwtAcW5jWJDVJC1frveLQA51CT7hWfbrnH1Gao8rUiY, senza account (PDA di un programma non ancora identificato) → resta contato, quindi blocca.
