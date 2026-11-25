@@ -157,7 +157,7 @@ Fonte principale: MICA Watch (registro indipendente, dati all'11/11/2026, https:
 
 | Exchange | Licenza MiCA | Tipo | Note | Giudizio |
 |---|---|---|---|---|
-| Bitvavo | Paesi Bassi (AFM), 26/06/2025, valida in tutta l'UE (https://www.bitvavo.com/it/news/bitvavo-obtains-mica-licence) | piattaforma di scambio | commissioni 0,00–0,25% per operazione (pagina ufficiale), sito e app in italiano; deposito con bonifico SEPA gratuito (visto da Danish nell'app, 25/11/2026); costo prelievo SOL da verificare nell'app | ✅ prima scelta (conto aperto da Danish il 25/11/2026) |
+| Bitvavo | Paesi Bassi (AFM), 26/06/2025, valida in tutta l'UE (https://www.bitvavo.com/it/news/bitvavo-obtains-mica-licence) | piattaforma di scambio | commissioni 0,00–0,25% per operazione (pagina ufficiale), sito e app in italiano; deposito con bonifico SEPA gratuito (visto da Danish nell'app, 25/11/2026); prelievo SOL 0,0089 SOL, minimo 0,017 SOL, variabile con la congestione (https://www.bitvavo.com/en/fees, 25/11/2026) | ✅ prima scelta (conto aperto da Danish il 25/11/2026) |
 | Kraken | Irlanda, 25/06/2025 | piattaforma di scambio | tabella prelievi ufficiale (https://support.kraken.com/it/articles/360000767986) non leggibile in automatico: verificare SOL a mano | ✅ alternativa |
 | Coinbase | Lussemburgo, 20/06/2025 | solo broker | semplice ma di solito più caro (spread) | 🟡 |
 | Bitpanda | Austria, 09/04/2025 | solo broker | come sopra | 🟡 |
