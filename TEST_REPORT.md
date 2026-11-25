@@ -127,3 +127,11 @@ Il momentum a 90 giorni è risultato il peggiore quasi ovunque. Lettura: il filt
 | ETH (dal 16/01/2023) | compra e tieni | +2,6%, uguale | +711% / +435% / +706% |
 | SOL (dal 31/03/2024) | media 50 g | −35,8% (−54,6%) vs −67,2% (−78,7%) | −23% / +152% / +76% |
 Lettura: le medie mobili riducono quasi sempre il calo massimo; un guadagno superiore affidabile non c'è. Il vantaggio della media 50 g su BTC sparisce con costi all'1%. Nessuna strategia è pronta per soldi veri; prossimo passo: shadow giornaliero.
+
+### Mix di monete a quote uguali (25/11/2026, `trade-backtest` nel cloud, prezzi Bitvavo fino al 25/11/2026)
+| Mix | Compra e tieni | Media 50 g | Media 200 g | Costi 1%: c&t / 50 g / 200 g |
+|---|---|---|---|---|
+| BTC+ETH+SOL (dal 03/08/2021) | −3,2% (calo −75,1%) | +219,7% (−43,8%) | +105,6% (−41,1%) | −4% / +54% / +54% |
+| BTC+ETH (dal 08/03/2019) | +613,5% (−75,3%) | +1418,7% (−52,3%) | +622,0% (−54,0%) | +608% / +406% / +401% |
+| Ultimi 365 giorni, BTC+ETH+SOL | −39,7% | +7,8% | −0,6% | — |
+Lettura: nell'ultimo anno il mercato è sceso molto (BTC −29%, ETH −41%, SOL −48%) e le regole di tendenza hanno protetto il capitale. Sul lungo periodo e con costi alti il vantaggio della media 50 g si riduce o sparisce. La media 50 g è stata scelta guardando gli stessi dati: va confermata dalla simulazione ombra.
