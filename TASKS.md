@@ -68,7 +68,8 @@
 - [ ] Prima etichettatura reale (25/11/2026 sera) e decisione sulle soglie
 
 ### Fase 4 — Strategia e backtest
-- [ ] Modello costi completo
+- [x] Modello costi del giro completo (`src/trade/costs.py`): perdita quotata da Jupiter + rete + rent + margine slippage, regola 2× e tasse 33%
+- [ ] Stima della priority fee con l'API di Helius al posto del valore fisso
 - [ ] Strategy Engine v1
 - [ ] Backtest fuori campione
 
