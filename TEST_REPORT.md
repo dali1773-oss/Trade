@@ -148,3 +148,14 @@ Lettura: il filtro boccia giustamente quasi tutti i token cattivi; non sappiamo 
 
 ### Primo PASS: falso positivo GOTF (26/11/2026)
 Il 26/11 alle 01:32 UTC il filtro ha dato PASS a GOTF ("GLOBAL OIL TRUST FUND", 3ZPpZi…6d1n), pool Raydium contro USDC: liquidità dichiarata 29.548.155 $, FDV 29.696.564 $, prezzo fermo a 0,002969 $ da circa 10 ore. Quasi certamente liquidità finta (calcolata col prezzo del token stesso). Nessun acquisto (solo registrazione). Correzione: tre regole nuove, testate sul caso reale.
+
+### `trade-label --explain` sui primi 397 token etichettati a 24 ore (26/11/2026, sul Mac)
+Matrice: FAIL 14 vivi / 209 morti; UNKNOWN 36 vivi / 138 morti; PASS 0 (il PASS su GOTF non era ancora etichettato).
+| Regola | Bloccati | Morti | Vivi | % morti | Unico blocco e vivo |
+|---|---|---|---|---|---|
+| liquidita | 388 | 339 | 49 | 87% | 15 |
+| vendibilita | 218 | 211 | 7 | 97% | 0 |
+| concentrazione_top10 | 182 | 177 | 5 | 97% | 0 |
+| quota_creatore | 111 | 83 | 28 | 75% | 0 |
+| altre (nessun pool, età, transfer hook/fee, dexscreener) | 8 | 7 | 1 | — | 1 |
+Dei 50 bloccati ma vivi: 31 col prezzo quasi fermo (×0,93–1,07), 5 saliti molto (fino a ×2,9), 10 crollati, 4 senza prezzo. Lettura: vendibilità e concentrazione sono le regole più affidabili; la liquidità è l'unica candidata a essere ammorbidita, ma solo dopo averla misurata sulla parte USDC/SOL (regole del 26/11). "Vivo" non vuol dire "buono": serve anche un filtro sull'attività reale.
