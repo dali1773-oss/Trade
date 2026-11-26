@@ -1,0 +1,31 @@
+[
+ {
+  "url": "https://dexscreener.com/solana/3him6twgsv6lcf8sh68a5dqftmu84jem4knpy2dvpump",
+  "chainId": "solana",
+  "tokenAddress": "3hiM6twGsV6Lcf8sh68A5DqfTmU84jeM4kNPy2DVpump",
+  "icon": "https://cdn.dexscreener.com/cms/images/2oVxvyqeE1Jio2Al?width=64&height=64&fit=crop&quality=95&format=auto",
+  "description": "Cicada is an open-source AI tool that translates conversations in real time.",
+  "links": [
+   {"label": "Website", "url": "https://github.com/wquguru/cicada"},
+   {"type": "twitter", "url": "https://x.com/SnoSolana/status/2125284808762769807"}
+  ],
+  "cto": false
+ },
+ {
+  "url": "https://dexscreener.com/solana/az7dydicmc4g9hwnkeqywhi6fop1711c7habcrwzpump",
+  "chainId": "solana",
+  "tokenAddress": "Az7dYDicMc4G9hwnkeQYwHi6Fop1711C7hABcrWzpump",
+  "links": [
+   {"label": "Website", "url": "https://lordsmokingchickenfish.com/"},
+   {"type": "twitter", "url": "https://x.com/smkchknfish"},
+   {"type": "telegram", "url": "https://t.me/smokingchickenfishs"}
+  ],
+  "cto": false
+ },
+ {
+  "url": "https://dexscreener.com/base/0xabc",
+  "chainId": "base",
+  "tokenAddress": "0x0000000000000000000000000000000000000abc",
+  "cto": false
+ }
+]

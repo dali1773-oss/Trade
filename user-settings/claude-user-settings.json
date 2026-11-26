@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(//**/.env)",
+      "Edit(//**/.env)",
+      "Read(//**/.env.local)",
+      "Read(~/.trade-secrets/**)",
+      "Edit(~/.trade-secrets/**)",
+      "Read(~/.config/solana/**)",
+      "Read(//**/*keypair*.json)",
+      "Read(~/.ssh/**)",
+      "Bash(solana transfer *)",
+      "Bash(solana-keygen *)",
+      "Bash(spl-token transfer *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|Write|NotebookEdit|Grep|Glob|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/protect_secrets.py"
+          }
+        ]
+      }
+    ]
+  }
+}
