@@ -145,3 +145,6 @@ Etichettati 197 token (3 errori di rete).
 | UNKNOWN | 21 | 68 (76%) |
 Falsi negativi (PASS ma MORTO): 0, ma solo perché nessun token ha avuto PASS. In totale l'84% dei token nuovi è morto entro un giorno.
 Lettura: il filtro boccia giustamente quasi tutti i token cattivi; non sappiamo ancora se riconosce quelli buoni. Le 32 eccezioni (FAIL/UNKNOWN ma VIVO) vanno studiate per capire quali regole bloccano token sani. Nessuna soglia cambiata.
+
+### Primo PASS: falso positivo GOTF (26/11/2026)
+Il 26/11 alle 01:32 UTC il filtro ha dato PASS a GOTF ("GLOBAL OIL TRUST FUND", 3ZPpZi…6d1n), pool Raydium contro USDC: liquidità dichiarata 29.548.155 $, FDV 29.696.564 $, prezzo fermo a 0,002969 $ da circa 10 ore. Quasi certamente liquidità finta (calcolata col prezzo del token stesso). Nessun acquisto (solo registrazione). Correzione: tre regole nuove, testate sul caso reale.

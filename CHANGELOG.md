@@ -4,6 +4,7 @@ Formato ispirato a "Keep a Changelog". Date in formato AAAA-MM-GG.
 
 ## [Non rilasciato]
 ### Aggiunto
+- Filtro anti‑truffa: tre regole nuove (liquidità vera in USDC/SOL, liquidità rispetto all'FDV, compravendite nell'ultima ora) dopo il falso PASS su GOTF del 26/11/2026. Attive dal prossimo riavvio del registratore; soglie proposte in RISK_MANAGEMENT §4 in attesa di approvazione.
 - `trade-label --explain`: per ogni regola anti‑truffa conta quanti token ha bloccato, quanti erano morti e quanti vivi dopo l'orizzonte, e quando era l'unico blocco. Serve a trovare regole troppo severe.
 - `trade-backtest`: mix a quote uguali di tutte le monete (e senza SOL, che ha storia più corta), solo sui giorni comuni.
 - `trade-shadow`: simulazione ombra delle grandi cripto (soldi finti, nessuna chiave, nessun ordine). Usa solo giorni chiusi; parametri congelati al primo avvio.

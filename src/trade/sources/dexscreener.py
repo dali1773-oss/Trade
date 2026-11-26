@@ -104,7 +104,11 @@ def parse_pairs(payload: Any, *, observed_at: datetime | None = None) -> list[Po
                     datetime.fromtimestamp(created_ms / 1000, UTC) if created_ms else None
                 ),
                 observed_at=observed_at,
-                extra={"labels": item.get("labels") or []},
+                extra={
+                    "labels": item.get("labels") or [],
+                    # Quantità del token di quotazione (USDC, SOL…) nel pool: i "soldi veri".
+                    "liquidity_quote": _nested(item, "liquidity", "quote"),
+                },
             )
         )
     return snapshots

@@ -35,6 +35,9 @@ class Thresholds:
     max_creator_pct: Decimal = Decimal("5")
     max_sell_impact_pct: Decimal = Decimal("5")
     max_transfer_fee_bps: int = 0
+    # Aggiunte il 26/11/2026 dopo il falso PASS su GOTF (liquidità ≈ FDV, prezzo fermo):
+    max_liquidity_fdv_ratio: Decimal = Decimal("0.5")  # oltre: "liquidità" fatta col token stesso
+    min_trades_h1: int = 10  # compravendite nell'ultima ora
 
 
 @dataclass(frozen=True)
@@ -96,6 +99,43 @@ def check_liquidity(snap: PoolSnapshot, th: Thresholds) -> CheckResult:
         return _unknown(name, "liquidità non disponibile (es. ancora sulla curva di pump.fun)")
     if snap.liquidity_usd < th.min_liquidity_usd:
         return _fail(name, f"{snap.liquidity_usd} $ < minimo {th.min_liquidity_usd} $")
+    return _ok(name)
+
+
+def check_real_liquidity(snap: PoolSnapshot, th: Thresholds) -> CheckResult:
+    """La metà "seria" del pool (USDC, SOL…) deve valere almeno metà del minimo di liquidità.
+
+    La liquidità in dollari dichiarata conta anche il token stesso al suo prezzo:
+    un token gonfiato può sembrare un pool da milioni con pochi dollari veri dentro.
+    """
+    name = "liquidita_reale"
+    raw = snap.extra.get("liquidity_quote")
+    quote = Decimal(str(raw)) if raw is not None else None
+    if quote is None or not snap.price_usd or not snap.price_native:
+        return _unknown(name, "parte in USDC/SOL del pool non disponibile")
+    quote_usd = quote * snap.price_usd / snap.price_native
+    if quote_usd < th.min_liquidity_usd / 2:
+        return _fail(name, f"solo {quote_usd:.0f} $ di USDC/SOL nel pool")
+    return _ok(name)
+
+
+def check_liquidity_vs_fdv(snap: PoolSnapshot, th: Thresholds) -> CheckResult:
+    name = "liquidita_vs_valore"
+    if snap.liquidity_usd is None or not snap.fdv_usd:
+        return _unknown(name, "FDV non disponibile")
+    ratio = snap.liquidity_usd / snap.fdv_usd
+    if ratio > th.max_liquidity_fdv_ratio:
+        return _fail(name, f"liquidità = {ratio * 100:.0f}% del valore totale (quasi tutti i token nel pool)")
+    return _ok(name)
+
+
+def check_activity(snap: PoolSnapshot, th: Thresholds) -> CheckResult:
+    name = "attivita"
+    if snap.buys_h1 is None or snap.sells_h1 is None:
+        return _unknown(name, "compravendite non disponibili")
+    trades = snap.buys_h1 + snap.sells_h1
+    if trades < th.min_trades_h1:
+        return _fail(name, f"solo {trades} compravendite nell'ultima ora")
     return _ok(name)
 
 
@@ -207,7 +247,14 @@ def evaluate(
     thresholds: Thresholds | None = None,
 ) -> ScamVerdict:
     th = thresholds or Thresholds()
-    checks = [check_liquidity(snap, th), check_pool_age(snap, th, now), *check_onchain(info, th)]
+    checks = [
+        check_liquidity(snap, th),
+        check_real_liquidity(snap, th),
+        check_liquidity_vs_fdv(snap, th),
+        check_activity(snap, th),
+        check_pool_age(snap, th, now),
+        *check_onchain(info, th),
+    ]
     if known_symbols is not None:
         checks.append(check_copycat(snap.base_symbol, snap.base_token, known_symbols))
     if any(c.verdict is Verdict.FAIL for c in checks):

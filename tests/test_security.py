@@ -115,7 +115,10 @@ def fake_api(*, mint=None, sell_status=200, buy_status=200, sol_back="29400000",
             return httpx.Response(200, json=[{
                 "chainId": "solana", "dexId": "pumpswap", "pairAddress": POOL,
                 "baseToken": {"address": MINT, "symbol": "GOOD"},
-                "quoteToken": {"address": SOL_MINT}, "liquidity": {"usd": 50000},
+                "quoteToken": {"address": SOL_MINT},
+                "liquidity": {"usd": 50000, "base": 12500000, "quote": 125},
+                "priceUsd": "0.002", "priceNative": "0.00001", "fdv": 400000,
+                "txns": {"h1": {"buys": 40, "sells": 25}},
                 "pairCreatedAt": 1700000000000}])
         return httpx.Response(404)
 
