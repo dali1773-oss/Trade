@@ -51,15 +51,15 @@ L'aumento del wallet caldo oltre 100 € avviene solo dopo i criteri di §9 e co
 | Impatto prezzo massimo in vendita simulata | 5% | 5% |
 | Liquidità minima del pool | 20.000 $ | 20.000 $ |
 | Età minima del pool | 10 minuti (niente cecchinaggio del primo blocco) | da validare col backtest |
-| Liquidità "vera" (parte USDC/SOL del pool) | almeno 10.000 $ — *proposta 26/11/2026, in attesa di approvazione* | idem |
-| Liquidità rispetto al valore totale (FDV) | al massimo 50% — *proposta 26/11/2026, in attesa di approvazione* | idem |
-| Compravendite nell'ultima ora | almeno 10 — *proposta 26/11/2026, in attesa di approvazione* | idem |
+| Liquidità "vera" (parte USDC/SOL del pool) | almeno 10.000 $ — *approvata da Danish il 26/11/2026* | idem |
+| Liquidità rispetto al valore totale (FDV) | al massimo 50% — *approvata da Danish il 26/11/2026* | idem |
+| Compravendite nell'ultima ora | almeno 10 — *approvata da Danish il 26/11/2026* | idem |
 | Stop loss | −25% per posizione | da validare |
 | Time stop | chiusura dopo 24 h se nessun target | da validare |
 | Cooldown stesso token | 24 h dopo uno stop loss | 24 h |
 | Leva | **vietata** | **vietata** |
 
-Le tre regole "proposte" nascono dal falso PASS su GOTF del 26/11/2026 (liquidità dichiarata 29,5 M$ quasi uguale al valore totale, prezzo fermo da 10 ore): rendono il filtro solo più severo.
+Le tre regole "proposte" nascono dal falso PASS su GOTF del 26/11/2026 (liquidità dichiarata 29,5 M$ quasi uguale al valore totale, prezzo fermo da 10 ore): rendono il filtro solo più severo. Approvate da Danish il 26/11/2026.
 
 I valori sono iniziali e prudenti: vanno calibrati con dati registrati e backtest, poi approvati.
 
