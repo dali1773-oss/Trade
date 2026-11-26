@@ -117,3 +117,25 @@ def test_refresh_priority_scanned_then_young_then_oldest():
     # Appena fotografato, il token controllato torna in coda.
     store.mark_snapshot("solana", "SCANNED", now)
     assert store.tokens_to_refresh("solana", 1, now=now) == ["YOUNG"]
+
+
+def test_explain_shows_rules_blocking_survivors():
+    from trade.label import explain
+
+    store = Store(":memory:")
+    old = NOW - timedelta(hours=30)
+    data = [
+        ("A", "FAIL", ["concentrazione_top10: top 10 holder = 45%"], "VIVO"),
+        ("B", "FAIL", ["concentrazione_top10: top 10 holder = 80%", "vendibilita: impatto 30%"], "MORTO"),
+        ("C", "UNKNOWN", ["liquidita: liquidità non disponibile"], "MORTO"),
+        ("D", "PASS", [], "VIVO"),
+    ]
+    for tok, verdict, reasons, outcome in data:
+        store.add_scam_check("solana", tok, verdict=verdict, reasons=reasons, info={}, notes=[], checked_at=old)
+        store.add_label("solana", tok, 24, outcome, price_ratio=Decimal("1.5"), liquidity_usd=None, detail="")
+    out = explain(store.labeled_checks(24))
+    assert "concentrazione_top10" in out and "Token bloccati ma vivi: 1" in out
+    line = next(x for x in out.splitlines() if x.strip().startswith("concentrazione_top10"))
+    assert line.split()[1:5] == ["2", "1", "1", "50%"]  # bloccati, morti, vivi, % morti
+    assert line.split()[-1] == "1"  # unico blocco e vivo: A
+    assert "D" not in [x.split("…")[0].strip() for x in out.splitlines() if "…" in x]

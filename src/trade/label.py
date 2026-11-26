@@ -18,7 +18,9 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import logging
+from collections import Counter
 from decimal import Decimal
 from pathlib import Path
 
@@ -84,6 +86,44 @@ def format_matrix(matrix: dict[tuple[str, str], int], horizon_h: int) -> str:
     return "\n".join(lines)
 
 
+def check_name(reason: str) -> str:
+    """'concentrazione_top10: top 10 holder = 45%' -> 'concentrazione_top10'."""
+    return reason.split(":", 1)[0].strip()
+
+
+def explain(rows) -> str:
+    """Quali regole bloccano token che poi sopravvivono (possibili regole troppo severe).
+
+    Per ogni regola: quante volte ha bloccato, quanti di quei token erano MORTI dopo
+    l'orizzonte e quanti VIVI. Una regola con molti VIVI merita di essere studiata.
+    "Unico blocco" = la regola era l'unico motivo: allentandola, quel token sarebbe passato.
+    """
+    fired: Counter = Counter()
+    dead: Counter = Counter()
+    sole_alive: Counter = Counter()
+    survivors = []
+    for r in rows:
+        if r["verdict"] == "PASS":
+            continue
+        names = sorted({check_name(x) for x in json.loads(r["reasons"] or "[]")}) or ["(nessun motivo)"]
+        for n in names:
+            fired[n] += 1
+            if r["outcome"] == "MORTO":
+                dead[n] += 1
+        if r["outcome"] == "VIVO":
+            survivors.append((r["token_address"], r["verdict"], names, r["price_ratio"]))
+            if len(names) == 1:
+                sole_alive[names[0]] += 1
+    lines = ["Regole che hanno bloccato (FAIL/UNKNOWN) e cosa è successo dopo:",
+             f"  {'regola':<24}{'bloccati':>9}{'morti':>7}{'vivi':>6}{'% morti':>9}{'unico blocco e vivo':>21}"]
+    for n, k in fired.most_common():
+        lines.append(f"  {n:<24}{k:>9}{dead[n]:>7}{k - dead[n]:>6}{dead[n] * 100 / k:>8.0f}%{sole_alive[n]:>21}")
+    lines.append(f"Token bloccati ma vivi: {len(survivors)}")
+    for token, verdict, names, ratio in survivors:
+        lines.append(f"  {token[:8]}… {verdict:<8} prezzo x{ratio or '?'}  motivi: {', '.join(names)}")
+    return "\n".join(lines)
+
+
 async def _main_async(args: argparse.Namespace, transport: httpx.AsyncBaseTransport | None = None) -> int:
     store = Store(args.db)
     async with make_client(transport) as client:
@@ -91,6 +131,9 @@ async def _main_async(args: argparse.Namespace, transport: httpx.AsyncBaseTransp
     store.log_event("label", {"horizon_h": args.horizon, "labeled": done, "errors": errors})
     print(f"Etichettati ora: {done} (errori: {errors})")
     print(format_matrix(store.label_matrix(args.horizon), args.horizon))
+    if args.explain:
+        print()
+        print(explain(store.labeled_checks(args.horizon)))
     store.close()
     return 0
 
@@ -100,6 +143,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--db", type=Path, default=Path("data/recorder.sqlite"))
     p.add_argument("--horizon", type=int, default=24, help="ore dopo il verdetto (24 o 168)")
     p.add_argument("--limit", type=int, default=200, help="massimo token da etichettare in questa esecuzione")
+    p.add_argument("--explain", action="store_true", help="mostra quali regole bloccano token che poi sopravvivono")
     return p
 
 

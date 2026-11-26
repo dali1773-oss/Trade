@@ -329,6 +329,16 @@ class Store:
         ).fetchall()
         return {(r["verdict"], r["outcome"]): r["n"] for r in rows}
 
+    def labeled_checks(self, horizon_h: int) -> list[sqlite3.Row]:
+        """Verdetto, motivi ed esito di ogni token etichettato a `horizon_h` ore."""
+        return self.conn.execute(
+            "SELECT c.token_address, c.verdict, c.reasons, l.outcome, l.price_ratio, l.liquidity_usd "
+            "FROM scam_checks c JOIN scam_labels l "
+            "ON l.chain = c.chain AND l.token_address = c.token_address WHERE l.horizon_h = ? "
+            "ORDER BY c.token_address",
+            (horizon_h,),
+        ).fetchall()
+
     def counts(self) -> dict[str, int]:
         return {
             table: self.conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
